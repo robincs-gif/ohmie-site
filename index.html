@@ -98,7 +98,9 @@
             <img src="assets/screen-1.webp" alt="Ohmie home screen showing the Circuits I course path, daily quest, and streak" width="620" height="1342" fetchpriority="high">
           </div>
           -->
-          <img src="assets/ohmie-happy.webp" alt="Ohmie the robot mascot" class="hero-mascot-solo" fetchpriority="high" width="400" height="400" decoding="async">
+          <!-- Live Lottie mascot (the app's real idle animation); PNG is the reduce-motion / no-JS / load-failure fallback -->
+          <img src="assets/ohmie-happy.webp" alt="Ohmie the robot mascot" class="hero-mascot-solo" id="heroMascotImg" fetchpriority="high" width="400" height="400" decoding="async">
+          <div class="hero-mascot-lottie" id="heroMascotLottie" hidden aria-hidden="true" title="Tap Ohmie!"></div>
         </div>
       </div>
     </section>
@@ -372,6 +374,7 @@
     <p class="footer-copyright">© 2026 Ohmie. All rights reserved.</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="assets/vendor/lottie_light.min.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
 </html>

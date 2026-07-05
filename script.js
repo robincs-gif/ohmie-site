@@ -139,3 +139,48 @@
     });
   }
 })();
+
+/* ---- live Lottie hero mascot: idle loop + tap-to-celebrate ----
+   Progressive enhancement: PNG stays unless Lottie loads successfully.
+   Honors prefers-reduced-motion (static PNG). Same guard discipline as the app. */
+(function () {
+  'use strict';
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (typeof lottie === 'undefined') return;
+  var img = document.getElementById('heroMascotImg');
+  var box = document.getElementById('heroMascotLottie');
+  if (!img || !box) return;
+
+  function load(name, loop, onDone) {
+    return lottie.loadAnimation({
+      container: box, renderer: 'svg', loop: loop, autoplay: true,
+      path: 'assets/lottie/' + name + '.json'
+    });
+  }
+
+  var anim = load('idle', true);
+  anim.addEventListener('DOMLoaded', function () {
+    img.hidden = true;
+    box.hidden = false;
+  });
+  anim.addEventListener('data_failed', function () {
+    box.hidden = true;
+    img.hidden = false;
+  });
+
+  // tap Ohmie -> one-shot celebrate, then back to breathing
+  var celebrating = false;
+  box.addEventListener('click', function () {
+    if (celebrating) return;
+    celebrating = true;
+    anim.destroy();
+    var c = load('celebrate', false);
+    function backToIdle() {
+      c.destroy();
+      anim = load('idle', true);
+      celebrating = false;
+    }
+    c.addEventListener('complete', backToIdle);
+    c.addEventListener('data_failed', backToIdle);
+  });
+})();
