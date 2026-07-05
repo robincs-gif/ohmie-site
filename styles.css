@@ -321,18 +321,20 @@ section { padding: var(--s-16) var(--s-6); }
   align-items: center;
 }
 .feature-phone-col { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); }
+/* staged frames 2026-07-04: bezel, shadow, and backdrop are baked into the
+   images, so no CSS chrome — just a rounded card that crossfades */
 .phone-slider {
   position: relative;
-  width: min(300px, 74vw);
-  aspect-ratio: 1242 / 2688;
+  width: min(420px, 86vw);
+  aspect-ratio: 620 / 806;
 }
 .phone-slider .slide {
   position: absolute;
-  inset: 10px;
-  width: calc(100% - 20px);
-  height: calc(100% - 20px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: top;
+  border-radius: 24px;
   opacity: 0;
   transition: opacity 0.5s ease;
 }
