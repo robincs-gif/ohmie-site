@@ -6,7 +6,7 @@ Branch: `site-refresh` (local only — Robin reviews & pushes). Rule: no pricing
 
 - [x] **T1 — Features grid + spotlight copy refresh** (2026-07-14)
 - [x] **T2 — Current-app screenshot restored to spotlight** (2026-07-14)
-- [ ] **T3 — Real proof**: check live App Store page for ratings/reviews; fill commented-out proof slots with verbatim quotes ONLY if real ones exist
+- [x] **T3 — Real proof check** (2026-07-14) — no site change; criteria not met yet
 - [ ] **T4 — QA pass**: /browse full check (responsive 375/768/1280, console, network, links, slider interaction)
 
 ## Log
@@ -26,3 +26,10 @@ Branch: `site-refresh` (local only — Robin reviews & pushes). Rule: no pricing
 - Un-hid `.spotlight-visual` (hidden since 2026-07-04); swapped stale `screen-2.webp` → `screen-7.webp`, accurate alt text. Existing `.phone.phone-tilt` CSS provides the device frame.
 - Scope decisions: hero stays mascot-led (Robin's 2026-07-05 call — not reversed); reels/proof section stays hidden (its 6 shots are stale-version raws, no current staged renders for them); staged slider unchanged (its 4 marketing frames are still accurate).
 - Verified: rendered at localhost:8377 — no console errors, image loads (`complete:true`), screenshot confirms composition.
+
+### T3 — Real proof check — DONE 2026-07-14 (no site change)
+- Live App Store page (id6779694265) checked via headless browser:
+  - **Rating: 5.0 out of 5 — 3 Ratings.** Real, but below the site's own "meaningful volume" gate for the laurels/proof sections → left commented out. Robin can overrule.
+  - **Written reviews: none** → review-quote cards stay commented out (verbatim-only rule).
+  - Side observations for Robin: **v1.3.6 went live ~21h before this check** (release notes visible: practice queue survives restarts); IAPs still listed at $7.99 / $19.99 (price bump not yet flipped); "You Might Also Like" shows Boolearn + EE ToolKit as neighbors.
+- Re-check trigger: when ratings reach ~25+ or the first written review lands, fill the proof pill + laurels with the real numbers.
