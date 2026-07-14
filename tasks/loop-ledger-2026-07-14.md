@@ -5,7 +5,7 @@ Branch: `site-refresh` (local only — Robin reviews & pushes). Rule: no pricing
 ## Backlog
 
 - [x] **T1 — Features grid + spotlight copy refresh** (2026-07-14)
-- [ ] **T2 — Restore screenshot slider** with staged shots from `~/Code/ohmie-levelup-shots` + `~/Code/ohmie-emote-shots` (convert to webp, match `assets/staged/` format, re-enable hidden sections where material exists)
+- [x] **T2 — Current-app screenshot restored to spotlight** (2026-07-14)
 - [ ] **T3 — Real proof**: check live App Store page for ratings/reviews; fill commented-out proof slots with verbatim quotes ONLY if real ones exist
 - [ ] **T4 — QA pass**: /browse full check (responsive 375/768/1280, console, network, links, slider interaction)
 
@@ -20,3 +20,9 @@ Branch: `site-refresh` (local only — Robin reviews & pushes). Rule: no pricing
   - Slider dot aria-label: "Daily path" → "Streaks, levels, and wagers".
 - Verified: rendered via headless browser at localhost:8377 — zero console errors, all three copy changes confirmed in DOM, full-page screenshot taken.
 - NOT touched: pricing fine print ($19.99/yr ×3 locations) — waits for price bump.
+
+### T2 — Current-app screenshot restored to spotlight — DONE 2026-07-14
+- New asset: `assets/screen-7.webp` (29KB, 620×1342) — converted via PIL from `~/Code/ohmie-levelup-shots/item6-L5-milestone.png`. Shows Golden Ohmie skin + "LEVEL 5! Circuit Apprentice" modal + coin reward — skins, emotes, AND level-up in one shot.
+- Un-hid `.spotlight-visual` (hidden since 2026-07-04); swapped stale `screen-2.webp` → `screen-7.webp`, accurate alt text. Existing `.phone.phone-tilt` CSS provides the device frame.
+- Scope decisions: hero stays mascot-led (Robin's 2026-07-05 call — not reversed); reels/proof section stays hidden (its 6 shots are stale-version raws, no current staged renders for them); staged slider unchanged (its 4 marketing frames are still accurate).
+- Verified: rendered at localhost:8377 — no console errors, image loads (`complete:true`), screenshot confirms composition.
