@@ -7,7 +7,7 @@ Branch: `site-refresh` (local only — Robin reviews & pushes). Rule: no pricing
 - [x] **T1 — Features grid + spotlight copy refresh** (2026-07-14)
 - [x] **T2 — Current-app screenshot restored to spotlight** (2026-07-14)
 - [x] **T3 — Real proof check** (2026-07-14) — no site change; criteria not met yet
-- [ ] **T4 — QA pass**: /browse full check (responsive 375/768/1280, console, network, links, slider interaction)
+- [x] **T4 — QA pass** (2026-07-14) — all green; LOOP COMPLETE
 
 ## Log
 
@@ -33,3 +33,14 @@ Branch: `site-refresh` (local only — Robin reviews & pushes). Rule: no pricing
   - **Written reviews: none** → review-quote cards stay commented out (verbatim-only rule).
   - Side observations for Robin: **v1.3.6 went live ~21h before this check** (release notes visible: practice queue survives restarts); IAPs still listed at $7.99 / $19.99 (price bump not yet flipped); "You Might Also Like" shows Boolearn + EE ToolKit as neighbors.
 - Re-check trigger: when ratings reach ~25+ or the first written review lands, fill the proof pill + laurels with the real numbers.
+
+### T4 — QA pass — DONE 2026-07-14 — ALL GREEN
+- Console: zero errors. Network: zero failed requests (all 200/304).
+- Slider: dot 2 click → slide 2 active + "A streak you can bet on" card active (JS interaction works).
+- Responsive: 375/768/1280 screenshots taken — mobile stacks cleanly, new spotlight phone + feature card render correctly, no horizontal overflow.
+- privacy.html loads (title + h1 correct).
+
+## LOOP COMPLETE — handoff to Robin
+- Branch `site-refresh`: 4 commits, local only. Review: `cd ~/Code/ohmie-site && git diff main..site-refresh`
+- To ship: merge to main + push (GitHub Pages via CNAME picks it up).
+- Left for later (deliberate): pricing copy (3 spots, waits for price bump), proof/laurels (waits for review volume), reels section (needs current-version staged renders), hero (mascot-led by Robin's call).
