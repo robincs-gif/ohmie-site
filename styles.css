@@ -220,9 +220,9 @@ section { padding: var(--s-24) var(--s-6); }
 .sketch-arrow {
   position: absolute;
   left: 50%;
-  top: 1%;
+  top: 0.5%;
   width: clamp(60px, 9.5vw, 92px);
-  transform: translateX(-70%) rotate(10deg);
+  transform: translateX(-50%);
   z-index: 3;
   pointer-events: none;
   filter: drop-shadow(0 2px 3px rgba(214, 143, 10, 0.35));
