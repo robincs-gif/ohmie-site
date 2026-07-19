@@ -219,10 +219,9 @@ section { padding: var(--s-24) var(--s-6); }
 .hero-visual .device-b { width: 100%; transform: rotate(5deg); z-index: 1; margin-left: -8%; }
 .sketch-arrow {
   position: absolute;
-  left: 50%;
-  top: 0.5%;
-  width: clamp(60px, 9.5vw, 92px);
-  transform: translateX(-50%);
+  left: 19.5%;
+  top: -1%;
+  width: 46%;
   z-index: 3;
   pointer-events: none;
   filter: drop-shadow(0 2px 3px rgba(214, 143, 10, 0.35));
