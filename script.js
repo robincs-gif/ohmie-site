@@ -1,12 +1,31 @@
 /* Ohmie landing page — vanilla JS
-   1. Auto-rotating feature slider (mirrors calai's carousel)
-   2. Trial modal: desktop exit-intent OR (30s + 50% scroll depth),
-      once per session (sessionStorage), body scroll-locked while open */
+   1. Reveal-on-scroll (IntersectionObserver, respects prefers-reduced-motion)
+   2. Auto-rotating feature slider synced to the feature cards
+   3. Live Lottie hero mascot: idle loop + tap-to-celebrate
+   4. Final-CTA mascot: celebrate once when it scrolls into view */
 
 (function () {
   'use strict';
 
-  /* ---------- feature slider ---------- */
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- 1. reveal-on-scroll ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if (reduceMotion || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function (el) { el.classList.add('in-view'); });
+  } else {
+    var io = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+    revealEls.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---------- 2. feature slider ---------- */
   var slides = document.querySelectorAll('.phone-slider .slide');
   var dots = document.querySelectorAll('.slider-dots .dot');
   var cards = document.querySelectorAll('.feature-card');
@@ -15,172 +34,81 @@
   var INTERVAL = 4500;
 
   function goTo(index) {
-    current = index % cards.length; /* cards drive rotation; phone slides hidden 2026-07-04 */
+    current = index % cards.length;
     slides.forEach(function (el, i) { el.classList.toggle('is-active', i === current); });
     dots.forEach(function (el, i) { el.classList.toggle('is-active', i === current); });
     cards.forEach(function (el, i) { el.classList.toggle('is-active', i === current); });
   }
-
-  function startTimer() {
-    stopTimer();
-    timer = setInterval(function () { goTo(current + 1); }, INTERVAL);
-  }
-
-  function stopTimer() {
-    if (timer) { clearInterval(timer); timer = null; }
-  }
+  function startTimer() { stopTimer(); timer = setInterval(function () { goTo(current + 1); }, INTERVAL); }
+  function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
 
   if (cards.length) {
-    dots.forEach(function (dot, i) {
-      dot.addEventListener('click', function () { goTo(i); startTimer(); });
-    });
-    cards.forEach(function (card, i) {
-      card.addEventListener('click', function () { goTo(i); startTimer(); });
-    });
+    dots.forEach(function (dot, i) { dot.addEventListener('click', function () { goTo(i); startTimer(); }); });
+    cards.forEach(function (card, i) { card.addEventListener('click', function () { goTo(i); startTimer(); }); });
     var featureSection = document.querySelector('.features');
     if (featureSection) {
       featureSection.addEventListener('mouseenter', stopTimer);
       featureSection.addEventListener('mouseleave', startTimer);
     }
-    startTimer();
-  }
-
-  /* ---------- trial modal ---------- */
-  var MODAL_KEY = 'ohmie-trial-modal-seen';
-  var TIME_GATE = 30000;  // 30s elapsed…
-  var SCROLL_GATE = 0.5;  // …AND >=50% scroll depth
-  var overlay = document.getElementById('trialModal');
-  var closeBtn = document.getElementById('modalClose');
-  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  function hasFired() {
-    try { return sessionStorage.getItem(MODAL_KEY) === '1'; } catch (e) { return false; }
-  }
-
-  function openModal() {
-    if (!overlay) return;
-    overlay.hidden = false;
-    document.body.style.overflow = 'hidden'; // scroll-lock, restored on close
-    if (reducedMotion.matches) {
-      // no spring/fade — appear instantly
-      overlay.classList.add('is-open');
-    } else {
-      // next frame so the transition runs
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () { overlay.classList.add('is-open'); });
-      });
-    }
-    try { sessionStorage.setItem(MODAL_KEY, '1'); } catch (e) { /* private mode */ }
-  }
-
-  function closeModal() {
-    if (!overlay) return;
-    overlay.classList.remove('is-open');
-    document.body.style.overflow = '';
-    if (reducedMotion.matches) {
-      overlay.hidden = true;
-    } else {
-      setTimeout(function () { overlay.hidden = true; }, 300);
-    }
-  }
-
-  if (overlay) {
-    /* trigger: desktop exit-intent OR (30s elapsed AND >=50% scroll depth),
-       whichever first — at most once per session */
-    var timeGatePassed = false;
-    var timeGateTimer = null;
-
-    function scrollDepth() {
-      var doc = document.documentElement;
-      var height = doc.scrollHeight;
-      if (height <= window.innerHeight) return 1; // page fits in viewport
-      return ((window.pageYOffset || doc.scrollTop) + window.innerHeight) / height;
-    }
-
-    function disarm() {
-      document.documentElement.removeEventListener('mouseleave', onExitIntent);
-      window.removeEventListener('scroll', onScrollCheck);
-      if (timeGateTimer) { clearTimeout(timeGateTimer); timeGateTimer = null; }
-    }
-
-    function fire() {
-      disarm();
-      if (!hasFired()) openModal();
-    }
-
-    function onExitIntent(e) {
-      // leaving the viewport toward the top (small threshold for fast exits)
-      if (e.clientY <= 10) fire();
-    }
-
-    function onScrollCheck() {
-      if (timeGatePassed && scrollDepth() >= SCROLL_GATE) fire();
-    }
-
-    if (!hasFired()) {
-      // desktop only: exit-intent (touch devices never fire this)
-      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        document.documentElement.addEventListener('mouseleave', onExitIntent);
-      }
-      // mobile/all: time + scroll-depth gates
-      timeGateTimer = setTimeout(function () {
-        timeGatePassed = true;
-        onScrollCheck(); // user may already be past 50%
-      }, TIME_GATE);
-      window.addEventListener('scroll', onScrollCheck, { passive: true });
-    }
-
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) closeModal();
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !overlay.hidden) closeModal();
-    });
+    if (!reduceMotion) startTimer();
   }
 })();
 
-/* ---- live Lottie hero mascot: idle loop + tap-to-celebrate ----
+/* ---------- 3 + 4. live Lottie mascots ----------
    Progressive enhancement: PNG stays unless Lottie loads successfully.
    Honors prefers-reduced-motion (static PNG). Same guard discipline as the app. */
 (function () {
   'use strict';
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (typeof lottie === 'undefined') return;
-  var img = document.getElementById('heroMascotImg');
-  var box = document.getElementById('heroMascotLottie');
-  if (!img || !box) return;
 
-  function load(name, loop, onDone) {
+  function loadInto(box, name, loop) {
     return lottie.loadAnimation({
       container: box, renderer: 'svg', loop: loop, autoplay: true,
       path: 'assets/lottie/' + name + '.json'
     });
   }
 
-  var anim = load('idle', true);
-  anim.addEventListener('DOMLoaded', function () {
-    img.hidden = true;
-    box.hidden = false;
-  });
-  anim.addEventListener('data_failed', function () {
-    box.hidden = true;
-    img.hidden = false;
-  });
+  /* --- hero: idle loop, tap to celebrate --- */
+  var heroImg = document.getElementById('heroMascotImg');
+  var heroBox = document.getElementById('heroMascotLottie');
+  if (heroImg && heroBox) {
+    var anim = loadInto(heroBox, 'idle', true);
+    anim.addEventListener('DOMLoaded', function () { heroImg.hidden = true; heroBox.hidden = false; });
+    anim.addEventListener('data_failed', function () { heroBox.hidden = true; heroImg.hidden = false; });
 
-  // tap Ohmie -> one-shot celebrate, then back to breathing
-  var celebrating = false;
-  box.addEventListener('click', function () {
-    if (celebrating) return;
-    celebrating = true;
-    anim.destroy();
-    var c = load('celebrate', false);
-    function backToIdle() {
-      c.destroy();
-      anim = load('idle', true);
-      celebrating = false;
-    }
-    c.addEventListener('complete', backToIdle);
-    c.addEventListener('data_failed', backToIdle);
-  });
+    var celebrating = false;
+    heroBox.addEventListener('click', function () {
+      if (celebrating) return;
+      celebrating = true;
+      anim.destroy();
+      var c = loadInto(heroBox, 'celebrate', false);
+      function backToIdle() { c.destroy(); anim = loadInto(heroBox, 'idle', true); celebrating = false; }
+      c.addEventListener('complete', backToIdle);
+      c.addEventListener('data_failed', backToIdle);
+    });
+  }
+
+  /* --- final CTA: celebrate once on scroll-into-view --- */
+  var finalImg = document.getElementById('finalMascotImg');
+  var finalBox = document.getElementById('finalMascotLottie');
+  if (finalImg && finalBox && 'IntersectionObserver' in window) {
+    var fired = false;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting || fired) return;
+        fired = true;
+        obs.disconnect();
+        var c = loadInto(finalBox, 'celebrate', false);
+        c.addEventListener('DOMLoaded', function () { finalImg.hidden = true; finalBox.hidden = false; });
+        c.addEventListener('data_failed', function () { finalBox.hidden = true; finalImg.hidden = false; });
+        c.addEventListener('complete', function () {
+          // settle into the idle breathing loop after the one-shot celebrate
+          c.destroy();
+          loadInto(finalBox, 'idle', true);
+        });
+      });
+    }, { threshold: 0.5 });
+    obs.observe(finalImg);
+  }
 })();
