@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy — Ohmie</title>
-  <meta name="description" content="Ohmie's privacy policy. No accounts, no ads, no cross-app tracking.">
+  <meta name="description" content="Ohmie's privacy policy — what Ohmie and its providers process, how optional sign-in works, and how to delete your account and data.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://ohmie.io/privacy.html">
 
@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://ohmie.io/privacy.html">
   <meta property="og:title" content="Privacy Policy — Ohmie">
-  <meta property="og:description" content="Ohmie's privacy policy. No accounts, no ads, no cross-app tracking.">
+  <meta property="og:description" content="Ohmie's privacy policy — what Ohmie and its providers process, how optional sign-in works, and how to delete your account and data.">
   <meta property="og:image" content="https://ohmie.io/assets/og-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -22,7 +22,7 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Privacy Policy — Ohmie">
-  <meta name="twitter:description" content="Ohmie's privacy policy. No accounts, no ads, no cross-app tracking.">
+  <meta name="twitter:description" content="Ohmie's privacy policy — what Ohmie and its providers process, how optional sign-in works, and how to delete your account and data.">
   <meta name="twitter:image" content="https://ohmie.io/assets/og-card.png">
 
   <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -54,59 +54,50 @@
 
   <main class="legal-page">
     <h1>Ohmie Privacy Policy</h1>
-    <p class="legal-updated">Effective date: July 18, 2026</p>
+    <p class="legal-updated">Effective date: July 22, 2026</p>
 
-    <p>Ohmie ("the app") is an educational app for learning electronics, published by the Ohmie team.</p>
+    <p>Ohmie is an educational app for learning electronics. This policy explains the information Ohmie and its service providers process when you use the app.</p>
 
-    <p>Ohmie has no accounts, no ads, and no cross-app tracking. The only data that leaves your device is (1) what's needed to manage your subscription, (2) starting in v1.3, anonymous product-analytics events, and (3) starting in v1.3.8, your anonymous weekly leaderboard score. All three are explained below.</p>
-
-    <h2>What stays on your device</h2>
-    <p>Your progress and preferences — XP, coins, streak, completed lessons, your display name, and reminder/exam-date settings — are stored only on your device using Apple's standard app storage. We never see them, and deleting the app deletes them.</p>
-
-    <h2>Subscriptions</h2>
-    <p>Ohmie offers an auto-renewing subscription with a free trial. Purchases are processed by Apple and managed through RevenueCat, our subscription provider. To know whether you have an active subscription, RevenueCat receives your purchase and transaction details along with an anonymous, app-generated identifier. This is not tied to your name or any account (there is none), and it is never used for advertising or tracking.</p>
+    <h2>Information we process</h2>
     <ul>
-      <li>RevenueCat privacy policy: <a href="https://www.revenuecat.com/privacy">https://www.revenuecat.com/privacy</a></li>
-      <li>Purchases are also subject to Apple's privacy policy.</li>
+      <li><strong>Optional account information.</strong> You can use paid Ohmie content without an account. If you create an account, Supabase processes your email address, an account identifier, your sign-in provider, and authentication records. Apple may provide a name if you choose to share it. Google may provide your name and profile-image URL as part of its standard sign-in profile. Supabase retains provider profile details and security audit records such as the authentication event, account identifier, IP address, user agent, and provider. IP address may reveal an approximate location. Ohmie does not receive your Apple, Google, or email-account password.</li>
+      <li><strong>Purchase and entitlement information.</strong> RevenueCat processes an app user identifier, the products you purchase, subscription status, and related transaction and entitlement information. Apple processes payment details; Ohmie does not receive your full payment-card information. When you are signed in, Ohmie links the RevenueCat customer record to your Supabase account identifier so it can manage entitlement cleanup when an account is deleted.</li>
+      <li><strong>Analytics and technical information.</strong> PostHog receives limited app-interaction events, coarse onboarding choices, a random app-installation identifier, and standard technical context such as app version, operating system, and device type. Ohmie disables automatic screen capture, session replay, surveys, rage-click capture, automatic lifecycle capture, and automatic crash capture. The production analytics project discards client IP data. This PostHog setting does not apply to the separate Supabase authentication security logs described above. We do not send account email, display name, typed answers, or exact exam dates to PostHog.</li>
+      <li><strong>Learning progress and preferences.</strong> Lesson progress, XP, streaks, display name, learning preferences, and reminder settings are stored locally on your device. They are not currently synced to your Ohmie account. Local progress can remain on a device after sign-out; deleting an account from inside the unlocked app also offers the app's account-deletion cleanup for that device.</li>
+      <li><strong>Support communications.</strong> If you email support, we receive the email address and information you include in your message.</li>
     </ul>
 
-    <h2>Anonymous product analytics</h2>
-    <p>Starting in v1.3, Ohmie uses PostHog for anonymous, aggregate product analytics — so we can see which parts of the app people use and where they get stuck, and make it better. We send a small set of usage events (for example, "lesson completed" or "paywall shown"), each tagged with an anonymous, app-generated ID and basic device info (device model, OS version, app version, locale). No personal data is collected — no name, no email, nothing you type. Your IP address is discarded (so no location), there is no advertising identifier, and your data is never used for advertising or cross-app tracking.</p>
+    <h2>How we use information</h2>
+    <p>We use this information to authenticate optional accounts, provide and restore subscriptions, operate account deletion, maintain app security, troubleshoot failures, understand aggregate product use, and improve Ohmie.</p>
+
+    <h2>Service providers and disclosure</h2>
+    <p>Ohmie uses Apple, Google, Supabase, RevenueCat, and PostHog to provide the functions described above. These providers process information under their own terms and privacy policies. Ohmie does not sell personal information, serve third-party advertising, or use app data to track you across other companies' apps or websites.</p>
     <ul>
-      <li>PostHog privacy policy: <a href="https://posthog.com/privacy">https://posthog.com/privacy</a></li>
+      <li>Supabase: <a href="https://supabase.com/privacy">https://supabase.com/privacy</a></li>
+      <li>RevenueCat: <a href="https://www.revenuecat.com/privacy">https://www.revenuecat.com/privacy</a></li>
+      <li>PostHog: <a href="https://posthog.com/privacy">https://posthog.com/privacy</a></li>
+      <li>Apple: <a href="https://www.apple.com/legal/privacy/">https://www.apple.com/legal/privacy/</a></li>
+      <li>Google: <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a></li>
     </ul>
 
-    <h2>Weekly leaderboard</h2>
-    <p>Starting in v1.3.8, Ohmie has an optional-feeling but automatic weekly leaderboard: the top 50 learners by XP each week, visible to everyone using the app. It is designed so nothing personal is ever shown or stored.</p>
-    <ul>
-      <li><strong>Anonymous by construction.</strong> The app silently creates an anonymous account with Supabase, our database provider — no email, no password, no sign-up. You are identified only by a random ID.</li>
-      <li><strong>What's uploaded:</strong> that random ID, your public nickname, your XP total for the current week, and the week number. Nothing else.</li>
-      <li><strong>Your nickname:</strong> app-generated by default (like "Blazing Capacitor 42" — reroll it anytime with the 🎲 button). Starting in v1.3.9 you can also choose your own: chosen names are screened automatically for profanity, slurs, and impersonation before they ever appear, must be unique, and can be changed once a day. The name you type on your Profile stays on your device and never appears on the leaderboard unless you explicitly claim it as your board name.</li>
-      <li><strong>Reporting:</strong> long-press any name on the board to report and hide it. Reports come to us for review.</li>
-      <li><strong>Retention:</strong> leaderboard entries older than four completed weeks are deleted automatically.</li>
-      <li>Supabase privacy policy: <a href="https://supabase.com/privacy">https://supabase.com/privacy</a></li>
-    </ul>
+    <h2>Retention and deletion</h2>
+    <p>Account information is retained while your account exists and as needed for security, fraud prevention, legal obligations, and limited backup or operational-log retention. Purchase records may also be retained as required by Apple, RevenueCat, tax, or accounting rules.</p>
+    <p>You can delete an Ohmie account in the app without buying or maintaining a subscription:</p>
+    <ol>
+      <li>Open <strong>Profile → Account → Delete Account</strong> while subscribed, or tap <strong>Account</strong> on the subscription screen.</li>
+      <li>Follow the confirmation steps. Sign in with Apple accounts require a fresh Apple confirmation when available.</li>
+    </ol>
+    <p>Deleting an Ohmie account does not cancel an App Store subscription. Manage or cancel the subscription separately in Apple's subscription settings. You may also remove Ohmie under <strong>Apple Account → Sign in with Apple</strong> in device Settings.</p>
+    <p>Local learning data that remains on a device can be removed with Ohmie's reset controls or by deleting the app.</p>
 
-    <h2>What we do not do</h2>
-    <ul>
-      <li>No accounts, sign-up, or login.</li>
-      <li>No advertising and no ad identifiers (no IDFA).</li>
-      <li>No cross-app tracking, and no selling or sharing of data with data brokers.</li>
-      <li>No access to your camera, location, contacts, photos, or microphone.</li>
-    </ul>
-
-    <h2>Notifications</h2>
-    <p>If you enable reminders, scheduling happens entirely on your device. We never see it.</p>
-
-    <h2>Requesting deletion of your data</h2>
-    <p>Most of your data never leaves your device, so deleting the app removes it — your progress, preferences, display name, and reminder settings are all gone the moment you uninstall.</p>
-    <p>For the limited data that does leave your device — your anonymous product-analytics events (PostHog), your subscription records (RevenueCat), and your anonymous leaderboard entries (Supabase), none of which is tied to your name or an account — you can ask us to delete it at any time by emailing <a href="mailto:support@ohmie.io">support@ohmie.io</a>. We will delete the data associated with your app-generated identifier within 30 days of your request. Because purchases are not tied to any account, we may ask for your store transaction receipt to locate the record.</p>
+    <h2>Security</h2>
+    <p>Ohmie uses encrypted network connections and limits privileged account-deletion credentials to server-side functions. No storage or transmission system can be guaranteed completely secure.</p>
 
     <h2>Contact</h2>
-    <p>Questions: <a href="mailto:support@ohmie.io">support@ohmie.io</a></p>
+    <p>Questions or privacy requests: <a href="mailto:support@ohmie.io">support@ohmie.io</a></p>
 
     <h2>Changes</h2>
-    <p>If this policy ever changes, the updated policy will be posted at this URL before the change ships.</p>
+    <p>We may update this policy as Ohmie changes. We will post the updated policy and effective date before materially different data practices ship.</p>
   </main>
 
   <footer class="site-footer">
