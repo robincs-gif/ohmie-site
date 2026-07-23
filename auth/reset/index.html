@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Open Ohmie to reset your password</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="auth-callback" data-ohmie-auth-callback="reset">
+    <img src="/assets/ohmie-happy.webp" alt="Ohmie mascot" width="96" height="96">
+    <p class="auth-callback-kicker" data-callback-kicker>Checking link</p>
+    <h1 data-callback-title>Checking your reset link…</h1>
+    <p data-callback-message role="status" aria-live="polite">Please wait while Ohmie checks this link.</p>
+    <a class="auth-callback-button" data-open-ohmie aria-disabled="true" hidden>Open Ohmie</a>
+    <p class="auth-callback-help" data-callback-help hidden>Continue on the same iPhone or iPad where you requested the password reset. On a different device, return to Ohmie there and request a new reset link. You can also <a href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265">get Ohmie from the App Store</a>.</p>
+    <a class="auth-callback-home" href="/">Return to ohmie.io</a>
+  </main>
+  <script src="/auth-callback.js" defer></script>
+</body>
+</html>
