@@ -1,3 +1,6 @@
 _originals/
 .DS_Store
 .gstack/
+
+# gstack browse daemon log — churns on every run
+.gstack/browse-network.log
