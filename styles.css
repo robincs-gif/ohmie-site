@@ -720,3 +720,11 @@ section { padding: var(--s-24) var(--s-6); }
 @media (prefers-color-scheme: dark) {
   .rung { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.1); }
 }
+
+/* legal entity block on privacy.html */
+.legal-address {
+  font-style: normal;
+  line-height: 1.6;
+  opacity: 0.75;
+  margin-top: 0.5rem;
+}
