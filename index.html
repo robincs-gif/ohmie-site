@@ -196,6 +196,55 @@
       </div>
     </section>
 
+    <!-- ============ 5b. CURRICULUM LADDER ============
+         Every section name below is a real curriculum section in the shipping app
+         (Circuits I, Circuits II, Semiconductors, Microcontrollers, Robotics).
+         Do NOT add a section here that isn't in the app's section list. -->
+    <section class="ladder" id="curriculum">
+      <h2 class="reveal">It starts at "what is electricity?" and ends at robot navigation.</h2>
+      <p class="section-sub reveal">Five sections, each one built on the last. Same three minutes a day the whole way up.</p>
+
+      <ol class="ladder-list reveal">
+        <li class="rung">
+          <span class="rung-num">01</span>
+          <div class="rung-body">
+            <h3>Circuits I</h3>
+            <p>Voltage, current, resistance. Ohm's law until it's muscle memory.</p>
+          </div>
+        </li>
+        <li class="rung">
+          <span class="rung-num">02</span>
+          <div class="rung-body">
+            <h3>Circuits II</h3>
+            <p>Capacitors, dividers, and the 555 timer — the parts real designs are made of.</p>
+          </div>
+        </li>
+        <li class="rung">
+          <span class="rung-num">03</span>
+          <div class="rung-body">
+            <h3>Semiconductors</h3>
+            <p>Inside the transistor: holes, doping, and the PN junction that makes modern electronics possible.</p>
+          </div>
+        </li>
+        <li class="rung">
+          <span class="rung-num">04</span>
+          <div class="rung-body">
+            <h3>Microcontrollers</h3>
+            <p>Pins, analog reads, interrupts — write the code that drives the circuit.</p>
+          </div>
+        </li>
+        <li class="rung rung-last">
+          <span class="rung-num">05</span>
+          <div class="rung-body">
+            <h3>Robotics</h3>
+            <p>IMUs, sensor fusion, and SLAM — how a robot figures out where it is.</p>
+          </div>
+        </li>
+      </ol>
+
+      <p class="ladder-foot reveal">No prerequisites. Start at 01 and keep going.</p>
+    </section>
+
     <!-- ============ 6. FEATURE ZIG-ZAG ROWS ============ -->
     <section class="zigzag">
       <div class="zz-row reveal">
@@ -253,12 +302,14 @@
             <img src="assets/site-lesson-framed.webp" alt="Interactive lesson question with instant feedback and XP" class="slide" data-slide="1" width="790" height="1512" loading="lazy" decoding="async">
             <img src="assets/site-practice-framed.webp" alt="Explore: streak, leaderboard, topics and new releases" class="slide" data-slide="2" width="790" height="1512" loading="lazy" decoding="async">
             <img src="assets/site-home-framed.webp" alt="Home: the Circuits I path, card by card" class="slide" data-slide="3" width="790" height="1518" loading="lazy" decoding="async">
+            <img src="assets/site-practice-framed.webp" alt="Explore: the weekly leaderboard alongside your streak and topics" class="slide" data-slide="4" width="790" height="1512" loading="lazy" decoding="async">
           </div>
           <div class="slider-dots" role="tablist" aria-label="Feature screenshots">
             <button class="dot is-active" data-dot="0" role="tab" aria-label="Live circuit puzzles"></button>
             <button class="dot" data-dot="1" role="tab" aria-label="Interactive lessons"></button>
             <button class="dot" data-dot="2" role="tab" aria-label="Practice queue"></button>
             <button class="dot" data-dot="3" role="tab" aria-label="Daily Charge"></button>
+            <button class="dot" data-dot="4" role="tab" aria-label="Weekly leaderboard"></button>
           </div>
         </div>
         <div class="feature-cards">
@@ -277,6 +328,10 @@
           <button class="feature-card" data-feature="3">
             <h3>Daily Charge</h3>
             <p>Five questions a day worth +15 XP, waiting in Explore.</p>
+          </button>
+          <button class="feature-card" data-feature="4">
+            <h3>Weekly leaderboard</h3>
+            <p>Your XP puts you on the board against everyone else learning this week. Pick a display name, or stay quiet and just climb.</p>
           </button>
         </div>
       </div>
@@ -357,6 +412,14 @@
         <details class="faq-item">
           <summary>Is it good for total beginners?</summary>
           <p>Yes. Ohmie starts at "What is electricity?" and builds up 3 minutes at a time.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How far does it actually go?</summary>
+          <p>Further than most people expect. Five sections — Circuits I, Circuits II, Semiconductors, Microcontrollers, and Robotics — take you from Ohm's law to what's happening inside a transistor, then on to IMUs, sensor fusion, and SLAM. It's the same lesson format the whole way; the ideas just get bigger.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Can I just experiment without a lesson?</summary>
+          <p>Yes — Circuit Lab is an open bench. Wire up whatever you want and watch it behave, with nothing to get right and no XP on the line.</p>
         </details>
         <details class="faq-item">
           <summary>What if I get stuck on a question?</summary>
