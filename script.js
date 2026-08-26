@@ -1,4 +1,5 @@
 /* Ohmie landing page — vanilla JS
+   0. Campaign attribution stamped onto every App Store link
    1. Reveal-on-scroll (IntersectionObserver, respects prefers-reduced-motion)
    2. Auto-rotating feature slider synced to the feature cards
    3. Live Lottie hero mascot: idle loop + tap-to-celebrate
@@ -6,6 +7,28 @@
 
 (function () {
   'use strict';
+
+  /* ---------- 0. campaign attribution on store links ----------
+     Apple reads ?ct= off an App Store URL and reports those installs
+     under that name in App Store Connect. Ad traffic arrives carrying a
+     utm tag, so pass it straight through; organic visits fall back to
+     "ohmie_site". Without this every install sourced from this page is
+     unattributed, which makes paid spend unreadable.
+
+     Runs first on purpose: if a later block throws, attribution has
+     already been applied. */
+  (function tagStoreLinks() {
+    var qs = new URLSearchParams(window.location.search);
+    var raw = qs.get('utm_campaign') || qs.get('utm_source') || 'ohmie_site';
+    var token = raw.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40) || 'ohmie_site';
+    document.querySelectorAll('a[href*="apps.apple.com"]').forEach(function (a) {
+      var href = a.getAttribute('href');
+      // Product page only. The subscription-management link must stay bare.
+      if (!href || href.indexOf('/app/') === -1 || href.indexOf('ct=') !== -1) return;
+      a.setAttribute('href', href + (href.indexOf('?') === -1 ? '?' : '&') +
+                             'ct=' + token + '&mt=8');
+    });
+  })();
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
