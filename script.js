@@ -1,5 +1,6 @@
-/* Ohmie landing page — vanilla JS
+/* Ohmie site — vanilla JS
    0. Campaign attribution stamped onto every App Store link
+   0b. App Store clicks captured to PostHog (Site.appStoreClicked)
    1. Reveal-on-scroll (IntersectionObserver, respects prefers-reduced-motion)
    2. Auto-rotating feature slider synced to the feature cards
    3. Live Lottie hero mascot: idle loop + tap-to-celebrate
@@ -29,6 +30,21 @@
                              'ct=' + token + '&mt=8');
     });
   })();
+
+  /* ---------- 0b. App Store click analytics ----------
+     One delegated listener covers every store link. Fires
+     Site.appStoreClicked with the link's data-placement; posthog-js
+     queues the event and flushes it via sendBeacon on pagehide, so
+     navigation is never blocked and the event is not lost. */
+  document.addEventListener('click', function (e) {
+    if (!window.posthog || typeof posthog.capture !== 'function') return;
+    var t = e.target;
+    var link = t && t.closest ? t.closest('a[href*="apps.apple.com"]') : null;
+    if (!link) return;
+    posthog.capture('Site.appStoreClicked', {
+      placement: link.getAttribute('data-placement') || 'unknown'
+    });
+  });
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

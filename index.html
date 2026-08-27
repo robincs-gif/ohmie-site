@@ -36,6 +36,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
+
+  <!-- PostHog analytics — cookieless: memory-only persistence (no cookies or
+       localStorage), no autocapture, no session recording. Pageviews, pageleaves,
+       and App Store clicks only (see script.js). -->
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_scJDTumdy87JuGFbck2aV9N8uEyNsDbWpJRJXtijDvo7', {
+      api_host: 'https://us.i.posthog.com',
+      persistence: 'memory',            // cookieless — nothing written to the visitor's device
+      autocapture: false,
+      capture_pageview: true,
+      capture_pageleave: true,
+      disable_session_recording: true
+    });
+  </script>
 </head>
 <body id="top">
 
@@ -58,10 +73,10 @@
         <a href="#how">Features</a>
         <a href="#why">Why</a>
         <a href="mailto:support@ohmie.io">Support</a>
-        <a href="https://apps.apple.com/account/subscriptions">Manage Subscription</a>
+        <a href="https://apps.apple.com/account/subscriptions" data-placement="header_manage_subscription">Manage Subscription</a>
       </nav>
       <div class="header-cta">
-        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="header" aria-label="Download Ohmie on the App Store">
           <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
         </a>
       </div>
@@ -90,7 +105,7 @@
           </h1>
           <p class="hero-sub">Real problems, not paragraphs — the way you'd learn a language.</p>
           <div class="hero-cta">
-            <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+            <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="hero" aria-label="Download Ohmie on the App Store">
               <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
             </a>
             <a class="ghost-link" href="#how">See how it works ↓</a>
@@ -364,7 +379,7 @@
             <li>Feeling bold? Double-or-Nothing your streak.</li>
             <li>Sign in once — your progress follows you across devices.</li>
           </ul>
-          <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+          <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="momentum" aria-label="Download Ohmie on the App Store">
             <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
           </a>
         </div>
@@ -410,7 +425,7 @@
       </div>
       <p class="reassure reveal">No payment due today on Yearly — 7 days free, then $29.99/yr. Cancel anytime.</p>
       <div class="hero-cta pricing-cta reveal">
-        <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+        <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="pricing" aria-label="Download Ohmie on the App Store">
           <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
         </a>
       </div>
@@ -461,7 +476,7 @@
       <h2>Your first circuit is 3 minutes away.</h2>
       <p class="section-sub">Free to start. Cancel anytime.</p>
       <div class="hero-cta final-cta-buttons">
-        <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+        <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="final_cta" aria-label="Download Ohmie on the App Store">
           <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
         </a>
         <p class="fine-print">7 days free on Yearly. Then $7.99/mo or $29.99/yr.</p>
@@ -484,7 +499,7 @@
           <span class="brand-word">Ohmie</span>
         </a>
         <p class="footer-label">Download Ohmie</p>
-        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="footer" aria-label="Download Ohmie on the App Store">
           <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
         </a>
       </div>
@@ -492,7 +507,7 @@
         <h3>Legal</h3>
         <a href="privacy.html">Privacy Policy</a>
         <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms of Use</a>
-        <a href="https://apps.apple.com/account/subscriptions">Manage Subscription</a>
+        <a href="https://apps.apple.com/account/subscriptions" data-placement="footer_manage_subscription">Manage Subscription</a>
       </div>
       <div class="footer-col">
         <h3>Company</h3>

@@ -31,6 +31,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- PostHog analytics — cookieless: memory-only persistence (no cookies or
+       localStorage), no autocapture, no session recording. Pageviews, pageleaves,
+       and App Store clicks only (see script.js). -->
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_scJDTumdy87JuGFbck2aV9N8uEyNsDbWpJRJXtijDvo7', {
+      api_host: 'https://us.i.posthog.com',
+      persistence: 'memory',            // cookieless — nothing written to the visitor's device
+      autocapture: false,
+      capture_pageview: true,
+      capture_pageleave: true,
+      disable_session_recording: true
+    });
+  </script>
 </head>
 <body>
 
@@ -45,7 +60,7 @@
         <a href="mailto:support@ohmie.io">Support</a>
       </nav>
       <div class="header-cta">
-        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="header" aria-label="Download Ohmie on the App Store">
           <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
         </a>
       </div>
@@ -54,7 +69,7 @@
 
   <main class="legal-page">
     <h1>Ohmie Privacy Policy</h1>
-    <p class="legal-updated">Effective date: August 26, 2026</p>
+    <p class="legal-updated">Effective date: August 27, 2026</p>
 
     <p>Ohmie is an educational app for learning electronics. This policy explains the information Ohmie and its service providers process when you use the app.</p>
 
@@ -84,6 +99,9 @@
       <li>Apple: <a href="https://www.apple.com/legal/privacy/">https://www.apple.com/legal/privacy/</a></li>
       <li>Google: <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a></li>
     </ul>
+
+    <h2>Website analytics</h2>
+    <p>The ohmie.io website uses PostHog for aggregate site analytics: page views, clicks on App Store links, and the referring site or campaign tag a visit arrives with. The website’s PostHog is configured cookieless — it stores no cookies or other persistent identifiers on your device, and each visit starts fresh. Website analytics are not linked to any Ohmie app account. PostHog’s privacy policy is linked in the provider list above.</p>
 
     <h2>Retention and deletion</h2>
     <p>Account information is retained while your account exists and as needed for security, fraud prevention, legal obligations, and limited backup or operational-log retention. Purchase records may also be retained as required by Apple, RevenueCat, tax, or accounting rules.</p>
@@ -124,7 +142,7 @@
           <span class="brand-word">Ohmie</span>
         </a>
         <p class="footer-label">Download Ohmie</p>
-        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+        <a class="store-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="footer" aria-label="Download Ohmie on the App Store">
           <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
         </a>
       </div>
@@ -132,7 +150,7 @@
         <h3>Legal</h3>
         <a href="privacy.html">Privacy Policy</a>
         <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms of Use</a>
-        <a href="https://apps.apple.com/account/subscriptions">Manage Subscription</a>
+        <a href="https://apps.apple.com/account/subscriptions" data-placement="footer_manage_subscription">Manage Subscription</a>
       </div>
       <div class="footer-col">
         <h3>Company</h3>
@@ -142,5 +160,6 @@
     <p class="footer-copyright">© 2026 Ohmie LLC. All rights reserved.</p>
   </footer>
 
+  <script src="script.js" defer></script>
 </body>
 </html>
