@@ -4,3 +4,4 @@ _originals/
 
 # gstack browse daemon log — churns on every run
 .gstack/browse-network.log
+.superpowers/
