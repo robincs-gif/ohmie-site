@@ -21,7 +21,7 @@ Spec: `docs/superpowers/specs/2026-09-12-ohmie-site-brilliant-funnel-design.md` 
 - [ ] Lighthouse mobile, local server, 2026-09-14 baseline for this redesign: performance 76, FCP 2.5 s, LCP 5.7 s, TBT 0 ms, CLS 0.001, Speed Index 2.5 s (Lighthouse 12.8.2, simulated throttling). Re-run against live ohmie.io after deploy
 
 ## Ship
-- [ ] Commit on `main`, push (GitHub Pages deploys), check https://ohmie.io and https://ohmie.io/privacy.html live
+- [x] Commit on `main` (9a78e6e), pushed 2026-09-14; live within 30 s — /, privacy.html, styles, script, captures, video, og-card all 200; 12 placements; PostHog requests 200
 
 ## Review
 2026-09-14 review fixes applied (uncommitted):
