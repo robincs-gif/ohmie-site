@@ -1,10 +1,16 @@
 /* Ohmie site — vanilla JS
-   0. Campaign attribution stamped onto every App Store link
+   js. Marks <html class="js"> so styles.css may hide .reveal content until it scrolls in;
+       with JS off nothing is ever hidden.
+   0.  Campaign attribution stamped onto every App Store link
    0b. App Store clicks captured to PostHog (Site.appStoreClicked)
-   1. Reveal-on-scroll (IntersectionObserver, respects prefers-reduced-motion)
-   2. Auto-rotating feature slider synced to the feature cards
-   3. Live Lottie hero mascot: idle loop + tap-to-celebrate
-   4. Final-CTA mascot: celebrate once when it scrolls into view */
+   1.  Reveal-on-scroll (IntersectionObserver, respects prefers-reduced-motion)
+   2.  Sticky bar (phones only): hidden while the hero CTA, the pricing button
+       or the final badge is on screen
+   3.  Subject tabs (aria-selected, arrow keys)
+   4.  Videos: play when scrolled into view, pause off-screen, poster only under reduced motion
+   5.  Live Lottie hero mascot: idle loop + tap-to-celebrate */
+
+document.documentElement.classList.add('js');
 
 (function () {
   'use strict';
@@ -20,7 +26,7 @@
      already been applied. */
   (function tagStoreLinks() {
     var qs = new URLSearchParams(window.location.search);
-    var raw = qs.get('utm_campaign') || qs.get('utm_source') || 'ohmie_site';
+    var raw = qs.get('ct') || qs.get('utm_campaign') || qs.get('utm_source') || 'ohmie_site';
     var token = raw.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40) || 'ohmie_site';
     document.querySelectorAll('a[href*="apps.apple.com"]').forEach(function (a) {
       var href = a.getAttribute('href');
@@ -64,38 +70,76 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
-  /* ---------- 2. feature slider ---------- */
-  var slides = document.querySelectorAll('.phone-slider .slide');
-  var dots = document.querySelectorAll('.slider-dots .dot');
-  var cards = document.querySelectorAll('.feature-card');
-  var current = 0;
-  var timer = null;
-  var INTERVAL = 4500;
-
-  function goTo(index) {
-    current = index % cards.length;
-    slides.forEach(function (el, i) { el.classList.toggle('is-active', i === current); });
-    dots.forEach(function (el, i) { el.classList.toggle('is-active', i === current); });
-    cards.forEach(function (el, i) { el.classList.toggle('is-active', i === current); });
+  /* ---------- 2. sticky bar (phones only; CSS hides it above 48rem) ----------
+     Hidden while the hero CTA, the pricing button or the final badge is on
+     screen so two store buttons never stack. */
+  var bar = document.getElementById('stickyBar');
+  var heroCta = document.getElementById('heroCta');
+  var pricingBtn = document.querySelector('[data-placement="pricing"]');
+  var finalBadge = document.querySelector('[data-placement="final_cta"]');
+  if (bar && heroCta && pricingBtn && finalBadge && 'IntersectionObserver' in window) {
+    var heroVisible = true, pricingVisible = false, finalVisible = false;
+    var updateBar = function () {
+      var show = !heroVisible && !pricingVisible && !finalVisible;
+      bar.classList.toggle('is-visible', show);
+      bar.setAttribute('aria-hidden', show ? 'false' : 'true');
+    };
+    new IntersectionObserver(function (es) { heroVisible = es[0].isIntersecting; updateBar(); }).observe(heroCta);
+    new IntersectionObserver(function (es) { pricingVisible = es[0].isIntersecting; updateBar(); }).observe(pricingBtn);
+    new IntersectionObserver(function (es) { finalVisible = es[0].isIntersecting; updateBar(); }).observe(finalBadge);
   }
-  function startTimer() { stopTimer(); timer = setInterval(function () { goTo(current + 1); }, INTERVAL); }
-  function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
 
-  if (cards.length) {
-    dots.forEach(function (dot, i) { dot.addEventListener('click', function () { goTo(i); startTimer(); }); });
-    cards.forEach(function (card, i) { card.addEventListener('click', function () { goTo(i); startTimer(); }); });
-    var featureSection = document.querySelector('.features');
-    if (featureSection) {
-      featureSection.addEventListener('mouseenter', stopTimer);
-      featureSection.addEventListener('mouseleave', startTimer);
-    }
-    if (!reduceMotion) startTimer();
+  /* ---------- 3. subject tabs ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.tab-panel'));
+  if (tabs.length && tabs.length === panels.length) {
+    var selectTab = function (i, focus) {
+      tabs.forEach(function (t, j) {
+        var on = i === j;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        panels[j].classList.toggle('is-active', on);
+      });
+      if (focus) tabs[i].focus();
+    };
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { selectTab(i, false); });
+      t.addEventListener('keydown', function (ev) {
+        var n = null;
+        if (ev.key === 'ArrowRight') n = (i + 1) % tabs.length;
+        if (ev.key === 'ArrowLeft') n = (i - 1 + tabs.length) % tabs.length;
+        if (ev.key === 'Home') n = 0;
+        if (ev.key === 'End') n = tabs.length - 1;
+        if (n !== null) { ev.preventDefault(); selectTab(n, true); }
+      });
+    });
+  }
+
+  /* ---------- 4. videos ----------
+     Reduced motion: poster only. Otherwise play on entry, pause off-screen;
+     autoplay refusals are swallowed (the poster stays). */
+  var videos = Array.prototype.slice.call(document.querySelectorAll('video[autoplay]'));
+  if (reduceMotion) {
+    videos.forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+  } else if (videos.length && 'IntersectionObserver' in window) {
+    var vo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var v = e.target;
+        if (e.isIntersecting) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () { v.controls = false; });
+        } else {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.25 });
+    videos.forEach(function (v) { vo.observe(v); });
   }
 })();
 
-/* ---------- 3 + 4. live Lottie mascots ----------
-   Progressive enhancement: PNG stays unless Lottie loads successfully.
-   Honors prefers-reduced-motion (static PNG). Same guard discipline as the app. */
+/* ---------- 5. live Lottie hero mascot ----------
+   Progressive enhancement: the WebP stays unless Lottie loads successfully.
+   Honors prefers-reduced-motion (static image). Same guard discipline as the app. */
 (function () {
   'use strict';
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -108,7 +152,6 @@
     });
   }
 
-  /* --- hero: idle loop, tap to celebrate --- */
   var heroImg = document.getElementById('heroMascotImg');
   var heroBox = document.getElementById('heroMascotLottie');
   if (heroImg && heroBox) {
@@ -126,28 +169,5 @@
       c.addEventListener('complete', backToIdle);
       c.addEventListener('data_failed', backToIdle);
     });
-  }
-
-  /* --- final CTA: celebrate once on scroll-into-view --- */
-  var finalImg = document.getElementById('finalMascotImg');
-  var finalBox = document.getElementById('finalMascotLottie');
-  if (finalImg && finalBox && 'IntersectionObserver' in window) {
-    var fired = false;
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting || fired) return;
-        fired = true;
-        obs.disconnect();
-        var c = loadInto(finalBox, 'celebrate', false);
-        c.addEventListener('DOMLoaded', function () { finalImg.hidden = true; finalBox.hidden = false; });
-        c.addEventListener('data_failed', function () { finalBox.hidden = true; finalImg.hidden = false; });
-        c.addEventListener('complete', function () {
-          // settle into the idle breathing loop after the one-shot celebrate
-          c.destroy();
-          loadInto(finalBox, 'idle', true);
-        });
-      });
-    }, { threshold: 0.5 });
-    obs.observe(finalImg);
   }
 })();
