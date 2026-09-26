@@ -1,6 +1,6 @@
 /* Ohmie site — vanilla JS
-   js. Marks <html class="js"> so styles.css may hide .reveal content until it scrolls in;
-       with JS off nothing is ever hidden.
+   (index.html marks <html class="js"> with an inline <script> in <head> so styles.css
+       may hide .reveal content until it scrolls in; with JS off nothing is ever hidden.)
    0.  Campaign attribution stamped onto every App Store link
    0b. App Store clicks captured to PostHog (Site.appStoreClicked)
    1.  Reveal-on-scroll (IntersectionObserver, respects prefers-reduced-motion)
@@ -9,8 +9,6 @@
    3.  Subject tabs (aria-selected, arrow keys)
    4.  Videos: play when scrolled into view, pause off-screen, poster only under reduced motion
    5.  Live Lottie hero mascot: idle loop + tap-to-celebrate */
-
-document.documentElement.classList.add('js');
 
 (function () {
   'use strict';
@@ -118,9 +116,9 @@ document.documentElement.classList.add('js');
   /* ---------- 4. videos ----------
      Reduced motion: poster only. Otherwise play on entry, pause off-screen;
      autoplay refusals are swallowed (the poster stays). */
-  var videos = Array.prototype.slice.call(document.querySelectorAll('video[autoplay]'));
+  var videos = Array.prototype.slice.call(document.querySelectorAll('video[data-autoplay]'));
   if (reduceMotion) {
-    videos.forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+    videos.forEach(function (v) { v.removeAttribute('data-autoplay'); v.pause(); });
   } else if (videos.length && 'IntersectionObserver' in window) {
     var vo = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
@@ -139,24 +137,46 @@ document.documentElement.classList.add('js');
 
 /* ---------- 5. live Lottie hero mascot ----------
    Progressive enhancement: the WebP stays unless Lottie loads successfully.
-   Honors prefers-reduced-motion (static image). Same guard discipline as the app. */
+   Honors prefers-reduced-motion (static image). Same guard discipline as the app.
+   The 168 KB library is NOT in the initial load: it is injected after the window
+   load event (inside requestIdleCallback when available) and the animation pauses
+   while the hero is off-screen or the tab is hidden. */
 (function () {
   'use strict';
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (typeof lottie === 'undefined') return;
 
-  function loadInto(box, name, loop) {
+  var heroImg = document.getElementById('heroMascotImg');
+  var heroBox = document.getElementById('heroMascotLottie');
+  if (!heroImg || !heroBox) return;
+
+  function loadInto(box, name, loop, autoplay) {
     return lottie.loadAnimation({
-      container: box, renderer: 'svg', loop: loop, autoplay: true,
+      container: box, renderer: 'svg', loop: loop, autoplay: autoplay !== false,
       path: 'assets/lottie/' + name + '.json'
     });
   }
 
-  var heroImg = document.getElementById('heroMascotImg');
-  var heroBox = document.getElementById('heroMascotLottie');
-  if (heroImg && heroBox) {
-    var anim = loadInto(heroBox, 'idle', true);
-    anim.addEventListener('DOMLoaded', function () { heroImg.hidden = true; heroBox.hidden = false; });
+  function start() {
+    if (typeof lottie === 'undefined') return;
+
+    var inView = true;
+    var anim = loadInto(heroBox, 'idle', true, !document.hidden);
+    var sync = function () {
+      if (!anim) return;
+      if (inView && !document.hidden) anim.play(); else anim.pause();
+    };
+
+    anim.addEventListener('DOMLoaded', function () {
+      heroImg.hidden = true; heroBox.hidden = false;
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) { inView = e.isIntersecting; });
+          sync();
+        }, { threshold: 0 }).observe(heroBox);
+      }
+      document.addEventListener('visibilitychange', sync);
+      sync();
+    });
     anim.addEventListener('data_failed', function () { heroBox.hidden = true; heroImg.hidden = false; });
 
     var celebrating = false;
@@ -165,9 +185,32 @@ document.documentElement.classList.add('js');
       celebrating = true;
       anim.destroy();
       var c = loadInto(heroBox, 'celebrate', false);
-      function backToIdle() { c.destroy(); anim = loadInto(heroBox, 'idle', true); celebrating = false; }
+      anim = c;
+      function backToIdle() {
+        c.destroy();
+        anim = loadInto(heroBox, 'idle', true, inView && !document.hidden);
+        anim.addEventListener('data_failed', function () { heroBox.hidden = true; heroImg.hidden = false; });
+        celebrating = false;
+        sync();
+      }
       c.addEventListener('complete', backToIdle);
       c.addEventListener('data_failed', backToIdle);
     });
   }
+
+  function inject() {
+    var s = document.createElement('script');
+    s.src = 'assets/vendor/lottie_light.min.js';
+    s.async = true;
+    s.addEventListener('load', start);
+    document.head.appendChild(s);
+  }
+
+  function schedule() {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(inject, { timeout: 2000 });
+    else window.setTimeout(inject, 500);
+  }
+
+  if (document.readyState === 'complete') schedule();
+  else window.addEventListener('load', schedule);
 })();
