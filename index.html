@@ -35,7 +35,7 @@
 
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-latin-var.woff2" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=20260926">
+  <link rel="stylesheet" href="styles.css?v=20260930">
 
   <!-- PostHog analytics — cookieless: memory-only persistence (no cookies or
        localStorage), no autocapture, no session recording. Pageviews, pageleaves,
@@ -83,7 +83,7 @@
   <div class="hero-grid wrap">
     <div class="hero-copy">
       <div class="proof-pill">
-        <span>4.6 <span class="star">★</span> on the App Store · 133 ratings</span>
+        <span>4.5 <span class="star">★</span> on the App Store · 143 ratings</span>
       </div>
       <h1>Learn real electronics,<br><span class="blue">3&nbsp;minutes a day.</span></h1>
       <p class="hero-sub">Short lessons you solve by hand, with circuits that actually respond.</p>
@@ -103,7 +103,7 @@
         </div>
       </div>
       <img src="assets/ohmie-happy.webp" alt="" class="hero-mascot" id="heroMascotImg" width="150" height="145" decoding="async">
-      <div class="hero-mascot-lottie" id="heroMascotLottie" hidden aria-hidden="true" title="Tap Ohmie!"></div>
+      <div class="hero-mascot-rive" id="heroMascotRive" hidden aria-hidden="true" title="Tap Ohmie!"><canvas width="336" height="397"></canvas></div>
     </div>
   </div>
 </section>
@@ -113,8 +113,8 @@
   <div class="wrap">
     <div class="proof-row">
       <div class="proof-stat">
-        <p class="proof-num">4.6 <span class="star">★</span></p>
-        <p class="proof-label">App Store rating, 133 ratings</p>
+        <p class="proof-num">4.5 <span class="star">★</span></p>
+        <p class="proof-label">App Store rating, 143 ratings</p>
       </div>
       <div class="proof-stat">
         <p class="proof-num">590+</p>
@@ -201,6 +201,25 @@
 
     <div class="row reveal">
       <div class="tile tile-amber">
+        <div class="phone-wrap">
+          <div class="phone">
+            <img src="assets/cap-07-world-town-2x.webp" alt="Copper Town in Ohmie World: the training hall, the arena sign, and Ohmie's welcome" width="720" height="1565" loading="lazy" decoding="async">
+          </div>
+        </div>
+      </div>
+      <div class="row-copy">
+        <p class="eyebrow">New: Ohmie World</p>
+        <h3>Walk into Copper Town. Light your first LED.</h3>
+        <p class="lead">Ohmie World is a small town inside the app: wire real circuits on the workbench, then take on the Copper Trail's three trainers.</p>
+        <ul>
+          <li>Quiz-battle Watt, the practice bot — first to five wins.</li>
+          <li>Sign in and challenge another inventor live, 20 seconds a question.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row row-flip reveal">
+      <div class="tile tile-blue">
         <div class="phone-wrap">
           <div class="phone">
             <video data-autoplay muted loop playsinline preload="none" poster="assets/chargeup-poster.webp" aria-label="Lesson complete: XP, coins and streak cards count up while Ohmie celebrates" disablepictureinpicture disableremoteplayback width="496" height="1080" style="background-image:url('assets/chargeup-poster.webp')">
@@ -498,6 +517,6 @@
   </a>
 </div>
 
-<script src="script.js?v=20260926" defer onerror="document.documentElement.classList.remove('js')"></script>
+<script src="script.js?v=20260930" defer onerror="document.documentElement.classList.remove('js')"></script>
 </body>
 </html>

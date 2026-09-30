@@ -8,7 +8,7 @@
        or the final badge is on screen
    3.  Subject tabs (aria-selected, arrow keys)
    4.  Videos: play when scrolled into view, pause off-screen, poster only under reduced motion
-   5.  Live Lottie hero mascot: idle loop + tap-to-celebrate */
+   5.  Live Rive hero mascot: hop in + wave, idle loop, tap-to-celebrate */
 
 (function () {
   'use strict';
@@ -135,74 +135,95 @@
   }
 })();
 
-/* ---------- 5. live Lottie hero mascot ----------
-   Progressive enhancement: the WebP stays unless Lottie loads successfully.
-   Honors prefers-reduced-motion (static image). Same guard discipline as the app.
-   The 168 KB library is NOT in the initial load: it is injected after the window
-   load event (inside requestIdleCallback when available) and the animation pauses
-   while the hero is off-screen or the tab is hidden. */
+/* ---------- 5. live Rive hero mascot ----------
+   Ohmie from the Rive file (assets/rive/ohmie.riv, the "Ohmie" artboard, 220 x 260).
+   Progressive enhancement: the WebP stays unless Rive loads successfully.
+   Honors prefers-reduced-motion (static image). The runtime (~95 KB JS + ~360 KB
+   wasm, gzipped) and the 74 KB file are NOT in the initial load: they are injected
+   after the window load event (inside requestIdleCallback when available), and the
+   animation pauses while the hero is off-screen or the tab is hidden.
+   Choreography: HopIn, Wave, then the Idle loop; a LookAround every ~9 s; a tap
+   plays one celebration and returns to Idle. The clips are one-shots, so each is
+   followed by Idle after its own length (seconds below, read from the file). */
 (function () {
   'use strict';
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var heroImg = document.getElementById('heroMascotImg');
-  var heroBox = document.getElementById('heroMascotLottie');
+  var heroBox = document.getElementById('heroMascotRive');
   if (!heroImg || !heroBox) return;
+  var canvas = heroBox.querySelector('canvas');
+  if (!canvas) return;
 
-  function loadInto(box, name, loop, autoplay) {
-    return lottie.loadAnimation({
-      container: box, renderer: 'svg', loop: loop, autoplay: autoplay !== false,
-      path: 'assets/lottie/' + name + '.json'
-    });
-  }
+  var LENGTH = { HopIn: 0.8, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8 };
+  var TAPS = ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle'];
 
   function start() {
-    if (typeof lottie === 'undefined') return;
+    if (typeof rive === 'undefined') return;
 
-    var inView = true;
-    var anim = loadInto(heroBox, 'idle', true, !document.hidden);
-    var sync = function () {
-      if (!anim) return;
-      if (inView && !document.hidden) anim.play(); else anim.pause();
-    };
+    var r, busy = true, inView = true, next = null, look = null, lastTap = -1;
+    var running = function () { return inView && !document.hidden; };
 
-    anim.addEventListener('DOMLoaded', function () {
-      heroImg.hidden = true; heroBox.hidden = false;
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (es) {
-          es.forEach(function (e) { inView = e.isIntersecting; });
-          sync();
-        }, { threshold: 0 }).observe(heroBox);
-      }
-      document.addEventListener('visibilitychange', sync);
-      sync();
-    });
-    anim.addEventListener('data_failed', function () { heroBox.hidden = true; heroImg.hidden = false; });
+    function clip(name, then) {
+      busy = true;
+      r.stop(); r.play(name);
+      clearTimeout(next);
+      next = setTimeout(then || idle, LENGTH[name] * 1000 + 60);
+    }
+    function idle() {
+      busy = false;
+      r.stop(); r.play('Idle');
+      if (!running()) r.pause();
+    }
+    function sync() {
+      if (!r) return;
+      if (running()) r.play(); else r.pause();
+    }
 
-    var celebrating = false;
+    try {
+      r = new rive.Rive({
+        src: 'assets/rive/ohmie.riv',
+        canvas: canvas,
+        artboard: 'Ohmie',
+        animations: 'Idle',
+        autoplay: false,
+        layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.BottomCenter }),
+        onLoad: function () {
+          r.resizeDrawingSurfaceToCanvas();
+          heroImg.hidden = true; heroBox.hidden = false;
+          r.resizeDrawingSurfaceToCanvas();
+          if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (es) {
+              es.forEach(function (e) { inView = e.isIntersecting; });
+              sync();
+            }, { threshold: 0 }).observe(heroBox);
+          }
+          document.addEventListener('visibilitychange', sync);
+          window.addEventListener('resize', function () { r.resizeDrawingSurfaceToCanvas(); });
+          clip('HopIn', function () { clip('Wave'); });
+          look = setInterval(function () { if (!busy && running()) clip('LookAround'); }, 9000);
+        },
+        onLoadError: function () { heroBox.hidden = true; heroImg.hidden = false; }
+      });
+    } catch (e) { heroBox.hidden = true; heroImg.hidden = false; return; }
+
     heroBox.addEventListener('click', function () {
-      if (celebrating) return;
-      celebrating = true;
-      anim.destroy();
-      var c = loadInto(heroBox, 'celebrate', false);
-      anim = c;
-      function backToIdle() {
-        c.destroy();
-        anim = loadInto(heroBox, 'idle', true, inView && !document.hidden);
-        anim.addEventListener('data_failed', function () { heroBox.hidden = true; heroImg.hidden = false; });
-        celebrating = false;
-        sync();
-      }
-      c.addEventListener('complete', backToIdle);
-      c.addEventListener('data_failed', backToIdle);
+      if (!r || busy) return;
+      var i;
+      do { i = Math.floor(Math.random() * TAPS.length); } while (i === lastTap);
+      lastTap = i;
+      clip(TAPS[i]);
     });
   }
 
   function inject() {
     var s = document.createElement('script');
-    s.src = 'assets/vendor/lottie_light.min.js';
+    s.src = 'assets/vendor/rive/rive.js';
     s.async = true;
-    s.addEventListener('load', start);
+    s.addEventListener('load', function () {
+      if (typeof rive !== 'undefined' && rive.RuntimeLoader) rive.RuntimeLoader.setWasmUrl('assets/vendor/rive/rive.wasm');
+      start();
+    });
     document.head.appendChild(s);
   }
 
