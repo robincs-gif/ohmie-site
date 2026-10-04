@@ -8,7 +8,7 @@
        or the final badge is on screen
    3.  Subject tabs (aria-selected, arrow keys)
    4.  Videos: play when scrolled into view, pause off-screen, poster only under reduced motion
-   5.  Live Rive hero mascot: hop in + wave, idle loop, tap-to-celebrate */
+   5.  Live Rive hero mascot: hop or run in, idle loop, a reaction on every tap */
 
 (function () {
   'use strict';
@@ -139,11 +139,11 @@
    Ohmie from the Rive file (assets/rive/ohmie.riv, the "Ohmie" artboard, 220 x 260).
    Progressive enhancement: the WebP stays unless Rive loads successfully.
    Honors prefers-reduced-motion (static image). The runtime (~95 KB JS + ~360 KB
-   wasm, gzipped) and the 74 KB file are NOT in the initial load: they are injected
+   wasm, gzipped) and the ~105 KB (gzipped) file are NOT in the initial load: they are injected
    after the window load event (inside requestIdleCallback when available), and the
    animation pauses while the hero is off-screen or the tab is hidden.
-   Choreography: HopIn, Wave, then the Idle loop; a LookAround every ~9 s; a tap
-   plays one celebration and returns to Idle. The clips are one-shots, so each is
+   Choreography: HopIn then Wave, or RunIn (which ends in its own wave), then the Idle
+   loop; a LookAround every ~9 s; a tap plays one reaction and returns to Idle. The clips are one-shots, so each is
    followed by Idle after its own length (seconds below, read from the file). */
 (function () {
   'use strict';
@@ -155,8 +155,8 @@
   var canvas = heroBox.querySelector('canvas');
   if (!canvas) return;
 
-  var LENGTH = { HopIn: 0.8, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8 };
-  var TAPS = ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle'];
+  var LENGTH = { HopIn: 0.8, RunIn: 1.2, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8, ScreenSquish: 2.0, Tumble: 2.2 };
+  var TAPS = ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle', 'ScreenSquish', 'Tumble'];
 
   function start() {
     if (typeof rive === 'undefined') return;
@@ -200,7 +200,8 @@
           }
           document.addEventListener('visibilitychange', sync);
           window.addEventListener('resize', function () { r.resizeDrawingSurfaceToCanvas(); });
-          clip('HopIn', function () { clip('Wave'); });
+          if (Math.random() < 0.5) clip('HopIn', function () { clip('Wave'); });
+          else clip('RunIn');
           look = setInterval(function () { if (!busy && running()) clip('LookAround'); }, 9000);
         },
         onLoadError: function () { heroBox.hidden = true; heroImg.hidden = false; }
