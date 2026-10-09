@@ -319,3 +319,44 @@ html.js .tab-panel:not(.is-active) { display: none; }
 .legal-page a { color: var(--electric-dk); font-weight: 700; }
 .legal-updated { color: var(--ink-mid); font-size: 0.9rem; }
 .legal-address { font-style: normal; line-height: 1.6; opacity: 0.75; margin-top: 0.5rem; }
+
+/* ============ Halloween layer: the bats and the cobweb (html.halloween: October 1 to November 1) ============
+   Decoration only. Every piece is its own .hw-deco element (aria-hidden, no taps, absolutely positioned, `hidden`
+   until html.halloween shows it), so the page lays out exactly as without it, and nothing here covers text, a
+   button or a screenshot. The art is the app's own, never redrawn: the icon's bat in the launch screen's three
+   poses (the sprite at the top of <body>) and the icon's corner cobweb (halloween_v2.py corner_web).
+   Motion is transform and opacity only; none at all under prefers-reduced-motion. */
+html.halloween .hw-deco { pointer-events: none; }
+
+/* Four bats beside the hero phone, offset from the phone's edges; Ohmie keeps the lower right. Each glides,
+   drifting away from the phone and back, and now and then flaps (the launch's wings up / wings down frames). */
+html.halloween .hw-bat { display: block; position: absolute; z-index: 1; width: var(--w); aspect-ratio: 2.075; animation: hw-drift-l var(--d) ease-in-out var(--o) infinite; }
+html.halloween .hw-bat svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; animation: 3.4s step-end var(--fo) infinite; }
+html.halloween .hw-bat .f0 { animation-name: hw-f0; }
+html.halloween .hw-bat .f1 { animation-name: hw-f1; opacity: 0; }
+html.halloween .hw-bat .f2 { animation-name: hw-f2; opacity: 0; }
+html.halloween .hw-b1 { --w: clamp(24px, 8vw, 30px); right: calc(100% + 8px); top: 9%; --d: 7.6s; --o: -1.3s; --fo: -0.6s; }
+html.halloween .hw-b2 { --w: clamp(22px, 7vw, 28px); left: calc(100% + 8px); top: 2.5%; --d: 8.8s; --o: -4.1s; --fo: -2.2s; animation-name: hw-drift-r; }
+html.halloween .hw-b3 { --w: clamp(19px, 6vw, 24px); right: calc(100% + 12px); top: 43%; --d: 9.6s; --o: -2.6s; --fo: -1.4s; }
+html.halloween .hw-b4 { --w: clamp(18px, 5.5vw, 22px); left: calc(100% + 12px); top: 25%; --d: 7.1s; --o: -5.4s; --fo: -2.9s; animation-name: hw-drift-r; }
+@media (min-width: 40rem) {
+  html.halloween .hw-b1 { --w: 46px; right: calc(100% + 18px); }
+  html.halloween .hw-b2 { --w: 40px; left: calc(100% + 20px); }
+  html.halloween .hw-b3 { --w: 32px; right: calc(100% + 30px); }
+  html.halloween .hw-b4 { --w: 28px; left: calc(100% + 40px); }
+}
+@keyframes hw-drift-l { 0%, 100% { transform: translate(0, 0) rotate(-3deg); } 30% { transform: translate(-5px, -8px) rotate(2deg); } 65% { transform: translate(-2px, 5px) rotate(-1deg); } }
+@keyframes hw-drift-r { 0%, 100% { transform: translate(0, 0) rotate(3deg); } 30% { transform: translate(5px, -8px) rotate(-2deg); } 65% { transform: translate(2px, 5px) rotate(1deg); } }
+/* one flap burst per 3.4 s: up, down, up, down, up, down (85 ms a frame), then the glide pose */
+@keyframes hw-f0 { 0% { opacity: 0; } 15%, 100% { opacity: 1; } }
+@keyframes hw-f1 { 0% { opacity: 1; } 2.5% { opacity: 0; } 5% { opacity: 1; } 7.5% { opacity: 0; } 10% { opacity: 1; } 12.5%, 100% { opacity: 0; } }
+@keyframes hw-f2 { 0% { opacity: 0; } 2.5% { opacity: 1; } 5% { opacity: 0; } 7.5% { opacity: 1; } 10% { opacity: 0; } 12.5% { opacity: 1; } 15%, 100% { opacity: 0; } }
+
+/* The cobweb in the header's empty top-left corner, only where that corner is clear of the logo (80rem and up). */
+html.halloween .hw-web { position: absolute; left: 0; top: 0; z-index: -1; line-height: 0; color: #C7B6EC; }
+html.halloween .hw-web svg { display: block; }
+@media (min-width: 80rem) { html.halloween .hw-web { display: block; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html.halloween .hw-bat, html.halloween .hw-bat svg { animation: none; }
+}
