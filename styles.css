@@ -144,6 +144,15 @@ html.js .reveal.in-view { opacity: 1; transform: none; }
 .whatsnew-list strong { color: var(--ink); font-weight: 900; }
 @media (min-width: 40rem) { .whatsnew-list { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 60rem) { .whatsnew-list { grid-template-columns: repeat(4, 1fr); } }
+/* Halloween on the strip (.halloween is on <html> from October 1 to November 1). Outside the window the season's
+   card (.hw-only, kept last) is gone: the row is three across, and at two across the odd card left over takes the
+   full width. Inside it every card wears a pumpkin edge, deeper on the season's own. The edge is an inset shadow,
+   so no card changes size; orange never goes on text (it fails contrast on white). */
+html:not(.halloween) .whatsnew-list li.hw-only { display: none; }
+@media (min-width: 40rem) and (max-width: 59.99rem) { html:not(.halloween) .whatsnew-list li:nth-last-child(2):nth-child(odd) { grid-column: 1 / -1; } }
+@media (min-width: 60rem) { html:not(.halloween) .whatsnew-list { grid-template-columns: repeat(3, 1fr); } }
+html.halloween .whatsnew-list li { box-shadow: inset 0 3px 0 #FF8A1F; }
+html.halloween .whatsnew-list li.hw-only { box-shadow: inset 0 5px 0 #E2650C; }
 .proof-label { color: var(--ink-mid); font-weight: 700; margin-top: var(--s-1); font-size: 0.75rem; line-height: 1.3; }
 @media (min-width: 40rem) {
   .proof-row { gap: var(--s-6); padding: var(--s-6) 0; }
