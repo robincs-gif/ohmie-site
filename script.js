@@ -8,7 +8,8 @@
        or the final badge is on screen
    3.  Subject tabs (aria-selected, arrow keys)
    4.  Videos: play when scrolled into view, pause off-screen, poster only under reduced motion
-   5.  Live Rive hero mascot: hop or run in, idle loop, a reaction on every tap */
+   5.  Live Rive mascots (the hero and the final call to action): hop or run in, idle loop,
+       a reaction on every tap; Ohmie's Halloween costume and moves from October 1 to November 1 */
 
 (function () {
   'use strict';
@@ -135,44 +136,53 @@
   }
 })();
 
-/* ---------- 5. live Rive hero mascot ----------
-   Ohmie from the Rive file (assets/rive/ohmie.riv, the "Ohmie" artboard, 220 x 260).
-   Progressive enhancement: the WebP stays unless Rive loads successfully.
-   Honors prefers-reduced-motion (static image). The runtime (~95 KB JS + ~360 KB
-   wasm, gzipped) and the ~105 KB (gzipped) file are NOT in the initial load: they are injected
-   after the window load event (inside requestIdleCallback when available), and the
-   animation pauses while the hero is off-screen or the tab is hidden.
-   Choreography: HopIn then Wave, or RunIn (which ends in its own wave), then the Idle
-   loop; a LookAround every ~9 s; a tap plays one reaction and returns to Idle. The clips are one-shots, so each is
-   followed by Idle after its own length (seconds below, read from the file). */
+/* ---------- 5. live Rive mascots ----------
+   Ohmie from the Rive file (assets/rive/ohmie.riv: the app's ohmie_lesson.riv, the "Ohmie" artboard,
+   220 x 260), in the hero and at the final call to action. Progressive enhancement: each WebP stays
+   unless Rive loads successfully. Honors prefers-reduced-motion (static images). The runtime (~95 KB JS
+   + ~360 KB wasm, gzipped) and the ~108 KB (gzipped) file are NOT in the initial load: they are injected
+   after the window load event (inside requestIdleCallback when available); the final Ohmie starts when
+   it scrolls into view (the file is cached by then). Each pauses while off-screen or the tab is hidden.
+   Choreography: HopIn then Wave, or RunIn (which ends in its own wave), then the Idle loop; a
+   LookAround every ~9 s in the hero; a tap plays one reaction and returns to Idle. The clips are
+   one-shots, so each is followed by Idle after its own length (seconds below, read from the file).
+   Halloween (October 1 to November 1, the app's costume window: <html class="halloween">, set in the
+   head): every clip plays with the one-frame CostumeHalloween timeline, so Ohmie wears his vampire
+   cape, collar and fangs and his little bat, and a tap plays Boo, Trick or treat, Jack-o'-lantern or
+   Bat swarm. It switches itself off after November 1. */
 (function () {
   'use strict';
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   var heroImg = document.getElementById('heroMascotImg');
   var heroBox = document.getElementById('heroMascotRive');
+  var finalImg = document.getElementById('finalMascotImg');
+  var finalBox = document.getElementById('finalMascotRive');
   if (!heroImg || !heroBox) return;
-  var canvas = heroBox.querySelector('canvas');
-  if (!canvas) return;
 
-  var LENGTH = { HopIn: 0.8, RunIn: 1.2, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8, ScreenSquish: 2.0, Tumble: 2.2 };
-  var TAPS = ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle', 'ScreenSquish', 'Tumble'];
+  var HALLOWEEN = document.documentElement.classList.contains('halloween');
+  var LENGTH = { HopIn: 0.8, RunIn: 1.2, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8, ScreenSquish: 2.0, Tumble: 2.2,
+                 Boo: 1.5, TrickOrTreat: 1.6, JackOLantern: 2.2, BatSwarm: 2.4 };
+  var TAPS = HALLOWEEN ? ['Boo', 'TrickOrTreat', 'JackOLantern', 'BatSwarm']
+                       : ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle', 'ScreenSquish', 'Tumble'];
+  /* The costume is a one-frame timeline that keys only the costume's gates: played with a move, it dresses him. */
+  function dressed(name) { return HALLOWEEN ? [name, 'CostumeHalloween'] : name; }
 
-  function start() {
-    if (typeof rive === 'undefined') return;
-
-    var r, busy = true, inView = true, next = null, look = null, lastTap = -1;
+  function mascot(box, img, lookAround) {
+    var canvas = box.querySelector('canvas');
+    if (!canvas) return;
+    var r, busy = true, inView = true, next = null, lastTap = -1;
     var running = function () { return inView && !document.hidden; };
 
     function clip(name, then) {
       busy = true;
-      r.stop(); r.play(name);
+      r.stop(); r.play(dressed(name));
       clearTimeout(next);
       next = setTimeout(then || idle, LENGTH[name] * 1000 + 60);
     }
     function idle() {
       busy = false;
-      r.stop(); r.play('Idle');
+      r.stop(); r.play(dressed('Idle'));
       if (!running()) r.pause();
     }
     function sync() {
@@ -185,30 +195,30 @@
         src: 'assets/rive/ohmie.riv',
         canvas: canvas,
         artboard: 'Ohmie',
-        animations: 'Idle',
+        animations: dressed('Idle'),
         autoplay: false,
         layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.BottomCenter }),
         onLoad: function () {
           r.resizeDrawingSurfaceToCanvas();
-          heroImg.hidden = true; heroBox.hidden = false;
+          img.hidden = true; box.hidden = false;
           r.resizeDrawingSurfaceToCanvas();
           if ('IntersectionObserver' in window) {
             new IntersectionObserver(function (es) {
               es.forEach(function (e) { inView = e.isIntersecting; });
               sync();
-            }, { threshold: 0 }).observe(heroBox);
+            }, { threshold: 0 }).observe(box);
           }
           document.addEventListener('visibilitychange', sync);
           window.addEventListener('resize', function () { r.resizeDrawingSurfaceToCanvas(); });
           if (Math.random() < 0.5) clip('HopIn', function () { clip('Wave'); });
           else clip('RunIn');
-          look = setInterval(function () { if (!busy && running()) clip('LookAround'); }, 9000);
+          if (lookAround) setInterval(function () { if (!busy && running()) clip('LookAround'); }, 9000);
         },
-        onLoadError: function () { heroBox.hidden = true; heroImg.hidden = false; }
+        onLoadError: function () { box.hidden = true; img.hidden = false; }
       });
-    } catch (e) { heroBox.hidden = true; heroImg.hidden = false; return; }
+    } catch (e) { box.hidden = true; img.hidden = false; return; }
 
-    heroBox.addEventListener('click', function () {
+    box.addEventListener('click', function () {
       if (!r || busy) return;
       var i;
       do { i = Math.floor(Math.random() * TAPS.length); } while (i === lastTap);
@@ -217,12 +227,30 @@
     });
   }
 
+  function start() {
+    if (typeof rive === 'undefined') return;
+    mascot(heroBox, heroImg, true);
+    /* The final Ohmie hops in when the visitor reaches the call to action. */
+    if (finalImg && finalBox && 'IntersectionObserver' in window) {
+      var seen = new IntersectionObserver(function (es) {
+        if (!es.some(function (e) { return e.isIntersecting; })) return;
+        seen.disconnect();
+        mascot(finalBox, finalImg, false);
+      }, { threshold: 0.3 });
+      seen.observe(finalImg);
+    }
+  }
+
   function inject() {
     var s = document.createElement('script');
     s.src = 'assets/vendor/rive/rive.js';
     s.async = true;
     s.addEventListener('load', function () {
       if (typeof rive !== 'undefined' && rive.RuntimeLoader) rive.RuntimeLoader.setWasmUrl('assets/vendor/rive/rive.wasm');
+      /* Timelines by name, two at once for the costume: deprecated in the next major runtime, fine in
+         the vendored one. Moving to a newer runtime means moving to the "Ohmie" state machine and its
+         view model's costume switch. */
+      if (typeof rive !== 'undefined' && rive.Rive) rive.Rive.suppressDeprecationWarnings = ['names-array', 'animation-names', 'animations-param'];
       start();
     });
     document.head.appendChild(s);

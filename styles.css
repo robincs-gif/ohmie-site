@@ -248,6 +248,12 @@ html.js .tab-panel:not(.is-active) { display: none; }
 /* ============ 9. final CTA ============ */
 .final { text-align: center; }
 .final-mascot { width: 120px; margin: 0 auto var(--s-4); display: block; }
+/* The live Rive Ohmie in the still's place: the same Ohmie size and feet line (the artboard's 40-unit
+   headroom sits above, so the box starts 21px higher and nothing below it moves). */
+.final-mascot[hidden] { display: none; }
+.final-mascot-rive { width: 116px; aspect-ratio: 220/260; margin: -21px auto var(--s-4); cursor: pointer; }
+.final-mascot-rive[hidden] { display: none; }
+.final-mascot-rive canvas { display: block; width: 100%; height: 100%; }
 .final-buttons { display: flex; flex-direction: column; align-items: center; gap: var(--s-4); margin-top: var(--s-8); }
 
 /* ============ footer (one row) ============ */

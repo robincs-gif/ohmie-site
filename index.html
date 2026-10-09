@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#FBF9F1">
-  <script>document.documentElement.classList.add('js');</script>
+  <script>document.documentElement.classList.add('js');
+  /* Halloween dress, October 1 to November 1 (the app's costume window); ?costume=halloween|none previews it */
+  (function (d, cl) { var m = (d.getMonth() + 1) * 100 + d.getDate(), c = new URLSearchParams(location.search).get('costume');
+    if (c ? c === 'halloween' : (m >= 1001 && m <= 1101)) cl.add('halloween'); })(new Date(), document.documentElement.classList);</script>
   <title>Ohmie — Learn Real Electronics</title>
   <meta name="description" content="Ohmie teaches electronics the way you'd learn a language: short, game-like lessons you actually solve. Live circuit sims, real problems, your first circuit — 3 minutes a day.">
 
@@ -35,7 +38,7 @@
 
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-latin-var.woff2" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=20260930">
+  <link rel="stylesheet" href="styles.css?v=20261009">
 
   <!-- PostHog analytics — cookieless: memory-only persistence (no cookies or
        localStorage), no autocapture, no session recording. Pageviews, pageleaves,
@@ -103,6 +106,7 @@
         </div>
       </div>
       <img src="assets/ohmie-happy.webp" alt="" class="hero-mascot" id="heroMascotImg" width="150" height="145" decoding="async">
+      <script>if (document.documentElement.classList.contains('halloween')) document.getElementById('heroMascotImg').src = 'assets/ohmie-vampire.webp';</script>
       <div class="hero-mascot-rive" id="heroMascotRive" hidden aria-hidden="true" title="Tap Ohmie!"><canvas width="336" height="397"></canvas></div>
     </div>
   </div>
@@ -445,7 +449,9 @@
 <!-- ============ 9. FINAL CTA ============ -->
 <section class="final" id="final">
   <div class="wrap">
-    <img src="assets/ohmie-happy.webp" alt="" class="final-mascot" width="120" height="116" loading="lazy" decoding="async">
+    <img src="assets/ohmie-happy.webp" alt="" class="final-mascot" id="finalMascotImg" width="120" height="116" loading="lazy" decoding="async">
+    <script>if (document.documentElement.classList.contains('halloween')) document.getElementById('finalMascotImg').src = 'assets/ohmie-vampire.webp';</script>
+    <div class="final-mascot-rive" id="finalMascotRive" hidden aria-hidden="true" title="Tap Ohmie!"><canvas width="232" height="274"></canvas></div>
     <h2>Your first circuit is 3&nbsp;minutes away.</h2>
     <p class="section-sub">7 days free on Yearly. Cancel anytime in the App Store.</p>
     <div class="final-buttons">
@@ -488,6 +494,6 @@
   </a>
 </div>
 
-<script src="script.js?v=20260930" defer onerror="document.documentElement.classList.remove('js')"></script>
+<script src="script.js?v=20261009" defer onerror="document.documentElement.classList.remove('js')"></script>
 </body>
 </html>
