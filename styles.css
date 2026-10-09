@@ -183,6 +183,11 @@ html.js .reveal.in-view { opacity: 1; transform: none; }
   .row-flip .tile { order: 2; }
   .row-flip .row-copy { order: 1; }
 }
+/* Ohmie World plays sideways (1.5.9): the same phone on its side, same bezel and corners. */
+.tile.tile-wide { aspect-ratio: auto; }
+.tile .phone-wrap-wide { width: 100%; height: auto; aspect-ratio: 1311 / 603; }
+.phone-wide { aspect-ratio: 1311 / 603; border-radius: 5.75%/12.5%; }
+.phone-wide > img { border-radius: 4.8%/10.5%; }
 
 /* ============ 5. subjects ============ */
 .subjects { background: var(--cream-deep); }
