@@ -192,7 +192,7 @@
 
     try {
       r = new rive.Rive({
-        src: 'assets/rive/ohmie.riv',
+        src: 'assets/rive/ohmie.riv?v=20261009e',
         canvas: canvas,
         artboard: 'Ohmie',
         animations: dressed('Idle'),
