@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#FBF9F1">
   <script>document.documentElement.classList.add('js');
   /* Halloween dress, October 1 to November 1 (the app's costume window); ?costume=halloween|none previews it */
-  (function (d, cl) { var m = (d.getMonth() + 1) * 100 + d.getDate(), c = new URLSearchParams(location.search).get('costume');
+  (function (d, cl) { var m = (d.getMonth() + 1) * 100 + d.getDate(), q = new URLSearchParams(location.search), c = q.get('costume');
     if (c ? c === 'halloween' : (m >= 1001 && m <= 1101)) cl.add('halloween'); })(new Date(), document.documentElement.classList);</script>
   <title>Ohmie — Learn Real Electronics</title>
   <meta name="description" content="Ohmie teaches electronics the way you'd learn a language: short, game-like lessons you actually solve. Live circuit sims, real problems, your first circuit — 3 minutes a day.">
@@ -38,7 +38,7 @@
 
   <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-latin-var.woff2" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=20261009d">
+  <link rel="stylesheet" href="styles.css?v=20261019a">
 
   <!-- PostHog analytics — cookieless: memory-only persistence (no cookies or
        localStorage), no autocapture, no session recording. Pageviews, pageleaves,
@@ -60,7 +60,10 @@
 <!-- Halloween layer art (the app's own: the icon's bat in the launch screen's three poses); shown only under html.halloween -->
 <svg class="hw-sprite" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false" width="0" height="0"><defs><path id="hwW" d="M 0,0 C 0.18,-0.22 0.45,-0.42 0.78,-0.46 C 0.94,-0.48 1.06,-0.40 1.12,-0.26 C 1.00,-0.20 0.93,-0.10 0.92,0.02 C 0.82,-0.08 0.70,-0.08 0.62,0.03 C 0.54,-0.06 0.40,-0.05 0.34,0.06 C 0.22,0.02 0.10,0.04 0,0.12 Z"/><path id="hwB" d="M -0.13,0.10 C -0.13,-0.10 -0.08,-0.22 0,-0.22 C 0.08,-0.22 0.13,-0.10 0.13,0.10 C 0.13,0.26 0.06,0.34 0,0.34 C -0.06,0.34 -0.13,0.26 -0.13,0.10 Z M -0.10,-0.18 L -0.13,-0.34 L -0.03,-0.21 Z M 0.10,-0.18 L 0.13,-0.34 L 0.03,-0.21 Z"/><g id="hwF"><path d="M -0.07,-0.16 C -0.04,-0.2 0.04,-0.2 0.07,-0.16" fill="none" stroke="#6E4AA3" stroke-width=".03" stroke-linecap="round"/><circle cx="-.045" cy="-.1" r=".03" fill="#FFD84D"/><circle cx=".045" cy="-.1" r=".03" fill="#FFD84D"/></g><g id="hwSG"><use href="#hwW"/><use href="#hwW" transform="scale(-1 1)"/><use href="#hwB"/></g><g id="hwSU"><use href="#hwW" transform="rotate(-16)"/><use href="#hwW" transform="scale(-1 1) rotate(-16)"/><use href="#hwB"/></g><g id="hwSD"><use href="#hwW" transform="rotate(12)"/><use href="#hwW" transform="scale(-1 1) rotate(12)"/><use href="#hwB"/></g></defs><symbol id="hwBatG" viewBox="-1.215 -0.751 2.429 1.171"><use href="#hwSG" transform="translate(.035 .05)" fill="#24123A"/><use href="#hwSG" fill="#4B2B76"/><use href="#hwF"/></symbol><symbol id="hwBatU" viewBox="-1.215 -0.751 2.429 1.171"><use href="#hwSU" transform="translate(.035 .05)" fill="#24123A"/><use href="#hwSU" fill="#4B2B76"/><use href="#hwF"/></symbol><symbol id="hwBatD" viewBox="-1.215 -0.751 2.429 1.171"><use href="#hwSD" transform="translate(.035 .05)" fill="#24123A"/><use href="#hwSD" fill="#4B2B76"/><use href="#hwF"/></symbol></svg>
 
-<!-- ============ NAV ============ -->
+<!-- Shared icon art: the amber check disc (navy tick) for the feature column and one amber star, used wherever a rating shows (role="img" on each use, so amber is never text) -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false" width="0" height="0"><defs><symbol id="chk" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FFB020"/><path d="M7 12.6l3.3 3.2L17 9" fill="none" stroke="#14213D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="star" viewBox="0 0 24 24"><path d="M12 2.3L14.7 9.08L21.99 9.56L16.37 14.22L18.17 21.29L12 17.4L5.83 21.29L7.63 14.22L2.01 9.56L9.3 9.08Z" fill="#FFB020" stroke="#FFB020" stroke-width="1.2" stroke-linejoin="round"/></symbol></defs></svg>
+
+<!-- ============ 0. NAV ============ -->
 <header class="site-header">
   <span class="hw-deco hw-web" hidden aria-hidden="true"><svg aria-hidden="true" focusable="false" width="71" height="58" viewBox="0 0 71 58"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M-4,-4L68.8,-4.0 M-4,-4L63.3,18.8 M-4,-4L47.5,38.2 M-4,-4L23.9,51.2 M-4,-4L-4.0,55.7" stroke-width="1.6"/><path d="M25.4,-4.0Q20.2,-0.0 23.2,5.2Q16.5,7.3 16.8,13.0Q9.7,12.8 7.3,18.3Q0.8,15.9 -4.0,20.1M42.2,-4.0Q34.1,2.2 38.7,10.5Q28.3,13.7 28.7,22.8Q17.6,22.5 13.7,31.0Q3.6,27.2 -4.0,33.9M59.0,-4.0Q47.9,4.5 54.2,15.8Q40.0,20.1 40.5,32.5Q25.4,32.1 20.1,43.7Q6.3,38.6 -4.0,47.7" stroke-width="1.3"/></g></svg></span>
   <div class="header-inner">
@@ -89,7 +92,7 @@
   <div class="hero-grid wrap">
     <div class="hero-copy">
       <div class="proof-pill">
-        <span>4.6 <span class="star">★</span> on the App Store · 176 ratings</span>
+        <span>4.5 <svg class="star" role="img" aria-label="out of 5 stars" width="16" height="16"><use href="#star"/></svg> on the App Store · 267 ratings</span>
       </div>
       <h1>Learn real electronics,<br><span class="blue">3&nbsp;minutes a day.</span></h1>
       <p class="hero-sub">Short lessons you solve by hand, with circuits that actually respond.</p>
@@ -99,10 +102,11 @@
           <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
         </a>
       </div>
-      <p class="fine-print">7 days free, then $29.99/yr. Or $7.99/mo. <span class="nowrap">iPhone and iPad.</span></p>
+      <p class="fine-print"><span data-price="yearly">7 days free on Yearly.</span> <span class="nowrap">iPhone and iPad.</span></p>
     </div>
 
     <div class="hero-visual">
+      <div class="hero-glow" aria-hidden="true"></div>
       <div class="phone-wrap">
         <div class="phone">
           <img src="assets/cap-03-home-circuits-2x.webp" alt="Home: Section 1 of 4, Charge &amp; Electrons, today's three quests, and the Enter the Arena card" width="720" height="1565" fetchpriority="high" decoding="async">
@@ -119,205 +123,211 @@
   </div>
 </section>
 
-<!-- ============ 2. PROOF BAND ============ -->
+<!-- ============ 2. PROOF STRIP ============ -->
 <section class="proof">
   <div class="wrap">
     <div class="proof-row">
       <div class="proof-stat">
-        <p class="proof-num">4.6 <span class="star">★</span></p>
-        <p class="proof-label">App Store rating, 176 ratings</p>
+        <p class="proof-num">4.5 <svg class="star" role="img" aria-label="out of 5 stars" width="20" height="20"><use href="#star"/></svg></p>
+        <p class="proof-label">267 ratings</p>
+        <p class="proof-date">US App Store, Oct 18, 2026</p>
       </div>
       <div class="proof-stat">
-        <p class="proof-num">630</p>
-        <p class="proof-label">bite-size lessons</p>
+        <p class="proof-num">690+</p>
+        <p class="proof-label">lessons · 6 subjects</p>
       </div>
       <div class="proof-stat">
-        <p class="proof-num">5</p>
-        <p class="proof-label">subjects, no prerequisites</p>
+        <p class="proof-num">Rated 4+</p>
+        <p class="proof-label">iPhone and iPad</p>
       </div>
+      <blockquote class="proof-quote">
+        <p><span class="ell">[...]</span> It’s the definitive electronics app in my opinion. <span class="ell">[...]</span></p>
+        <cite><svg class="stars" role="img" aria-label="5 out of 5 stars" viewBox="0 0 120 24" width="80" height="16"><use href="#star" width="24" height="24"/><use href="#star" x="24" width="24" height="24"/><use href="#star" x="48" width="24" height="24"/><use href="#star" x="72" width="24" height="24"/><use href="#star" x="96" width="24" height="24"/></svg><span>Jsjdixhbsgdjdb, App Store</span></cite>
+      </blockquote>
     </div>
   </div>
 </section>
 
-<!-- ============ 2b. NEW IN THIS UPDATE ============ -->
-<section class="whatsnew">
-  <div class="wrap">
-    <p class="eyebrow">New in 1.5.9</p>
-    <ul class="whatsnew-list">
-      <li><strong>Two new chapters.</strong> Meet AC: the wall's wave and what it does to your parts. And a CPU chapter: inside a processor, one tick at a time, from ARM to RISC-V.</li>
-      <li><strong>GPIO, rebuilt from scratch.</strong> Eight beginner lessons with animated scenes and hands-on benches: blink an LED, read a button, tame a floating pin.</li>
-      <li><strong>New Electronics lessons.</strong> What an ohm is, the potentiometer, the dielectric inside a capacitor, and Kirchhoff's two laws.</li>
-      <li class="hw-only"><strong>Halloween is here.</strong> A spooky new launch screen, and Ohmie wears his vampire cape until November 1.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- ============ 3. HOW IT WORKS ============ -->
+<!-- ============ 3. HOW OHMIE WORKS: tab list + phone ============ -->
 <span id="how"></span>
 <section class="how" id="features">
   <div class="wrap">
-    <h2 class="reveal">How Ohmie works</h2>
-    <div class="steps">
-      <div class="step reveal">
-        <div class="phone-wrap">
-          <div class="phone"><img src="assets/cap-10-subjects-2x.webp" alt="Subjects: pick the path you feel like today, from Electronics to Programming" width="720" height="1565" loading="lazy" decoding="async"></div>
-        </div>
-        <h3><span class="n">1.</span> Pick today's lesson</h3>
-        <p>A short lesson picks up right where you left off.</p>
+    <h2>How Ohmie works</h2>
+    <div class="how-grid">
+      <div class="how-tabs" role="tablist" aria-label="How Ohmie works" aria-orientation="vertical">
+        <button class="how-tab" role="tab" id="tab-solve" aria-controls="panel-solve" aria-selected="true">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EA8E6"/><stop offset="0.36" stop-color="#2EA8E6"/><stop offset="0.52" stop-color="#FFB020"/><stop offset="1" stop-color="#FFD84D"/></linearGradient></defs><path d="M12 1.5a7 7 0 0 0-4 12.8V16a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-1.7A7 7 0 0 0 12 1.5z" fill="url(#g1)"/><rect x="9" y="18.5" width="6" height="2.2" rx="1.1" fill="#136A97"/><path d="M10.3 22.5h3.4" stroke="#136A97" stroke-width="1.6" stroke-linecap="round"/><path d="M12 6v3.5l2 1.5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="how-label">Solve the circuit</span>
+          <span class="how-sent">Tap the break in the loop. Fix the fault. Watch the lamp light up — on a circuit that actually responds.</span>
+        </button>
+        <button class="how-tab" role="tab" id="tab-ask" aria-controls="panel-ask" aria-selected="false" tabindex="-1">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EA8E6"/><stop offset="0.36" stop-color="#2EA8E6"/><stop offset="0.52" stop-color="#FFB020"/><stop offset="1" stop-color="#FFD84D"/></linearGradient></defs><path d="M4 3h16a2.5 2.5 0 0 1 2.5 2.5v9A2.5 2.5 0 0 1 20 17h-7.2L8 21v-4H4a2.5 2.5 0 0 1-2.5-2.5v-9A2.5 2.5 0 0 1 4 3z" fill="url(#g2)"/><path d="M9.6 8.2a2.4 2.4 0 1 1 3.3 2.2c-.6.3-.9.7-.9 1.3v.4" fill="none" stroke="#14213D" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="14.2" r="1.1" fill="#14213D"/></svg>
+          <span class="how-label">Ask Ohmie</span>
+          <span class="how-sent">Every question has a built-in explanation, plus a nudge if you need one, and signed-in subscribers can ask Ohmie follow-up questions right there on the question.</span>
+        </button>
+        <button class="how-tab" role="tab" id="tab-streak" aria-controls="panel-streak" aria-selected="false" tabindex="-1">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="g3" x1="0" y1="1" x2="0.4" y2="0"><stop offset="0" stop-color="#FFB020"/><stop offset="0.44" stop-color="#FFB020"/><stop offset="0.6" stop-color="#2EA8E6"/><stop offset="1" stop-color="#2EA8E6"/></linearGradient></defs><path d="M12.5 1.5c.6 4 5.5 5.6 5.5 11a6 6 0 0 1-12 0c0-2.2 1-3.6 2.3-4.8.1 1.8 1 2.8 2.2 2.8-.3-3.2-1-5.8 2-9z" fill="url(#g3)"/><path d="M12 11.5c1.3 1.6 2.4 2.7 2.4 4.4a2.4 2.4 0 0 1-4.8 0c0-1.7 1.1-2.8 2.4-4.4z" fill="#FFD84D"/></svg>
+          <span class="how-label">Keep the streak</span>
+          <span class="how-sent">Every lesson banks XP and keeps your streak alive. A Daily Charge every day — up to five questions, +15 XP.</span>
+        </button>
+        <button class="how-tab" role="tab" id="tab-arena" aria-controls="panel-arena" aria-selected="false" tabindex="-1">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EA8E6"/><stop offset="0.36" stop-color="#2EA8E6"/><stop offset="0.52" stop-color="#FFB020"/><stop offset="1" stop-color="#FFD84D"/></linearGradient></defs><path d="M6.5 2.5h11v5.2a5.5 5.5 0 0 1-11 0V2.5z" fill="url(#g4)"/><path d="M4 4.5h2.5v2.8A3.2 3.2 0 0 1 4 4.5zM17.5 4.5H20a3.2 3.2 0 0 1-2.5 2.8V4.5z" fill="#2EA8E6"/><rect x="10.3" y="13" width="3.4" height="4" fill="#136A97"/><rect x="6.5" y="17" width="11" height="3.5" rx="1.2" fill="#136A97"/><path d="M12 4.3l.9 1.9 2.1.3-1.5 1.4.4 2.1-1.9-1-1.9 1 .4-2.1-1.5-1.4 2.1-.3z" fill="#fff"/></svg>
+          <span class="how-label">Enter the Arena</span>
+          <span class="how-sent">Quiz-battle Watt, the practice bot — first to five wins. Sign in and challenge another inventor live, 20 seconds a question.</span>
+        </button>
       </div>
-      <div class="step reveal">
-        <div class="phone-wrap">
-          <div class="phone"><img src="assets/cap-05-circuit-fix-2x.webp" alt="A fault-repair bench: a dark board with an open fuse, a live-source warning, and the Power off and Remove bridge buttons" width="720" height="1565" loading="lazy" decoding="async"></div>
+
+      <div class="how-panels">
+        <div class="how-panel is-active" role="tabpanel" id="panel-solve" aria-labelledby="tab-solve" tabindex="0">
+          <div class="phone-wrap">
+            <div class="phone"><img src="assets/cap-04-lesson0-2x.webp" alt="Lesson one's bench: Break the loop. Anywhere. A battery, a glowing lamp, and four bridges to tap open" width="720" height="1565" decoding="async"></div>
+          </div>
+          <div class="how-card">
+            <h3>You don't watch electronics. You solve it.</h3>
+            <p>Tap the break in the loop. Fix the fault. Watch the lamp light up — on a circuit that actually responds.</p>
+          </div>
         </div>
-        <h3><span class="n">2.</span> Fix the circuit</h3>
-        <p>Answer real questions and fix live circuits by hand.</p>
-      </div>
-      <div class="step reveal">
-        <div class="phone-wrap">
-          <div class="phone"><img src="assets/cap-milestone-w.webp" alt="Explore tab with a 12-day streak row and a Level 12 celebration, 2,400 XP banked" width="720" height="1565" loading="lazy" decoding="async"></div>
+        <div class="how-panel" role="tabpanel" id="panel-ask" aria-labelledby="tab-ask" tabindex="0">
+          <div class="phone-wrap">
+            <div class="phone"><img src="assets/cap-04-lesson0-2x.webp" alt="Lesson one's bench with the Ask Ohmie button: Break the loop. Anywhere. A battery, a glowing lamp, and four bridges to tap open" width="720" height="1565" loading="lazy" decoding="async"></div>
+          </div>
+          <div class="how-card">
+            <h3>Stuck? Ask Ohmie.</h3>
+            <p>Every question has a built-in explanation, plus a nudge if you need one, and signed-in subscribers can ask Ohmie follow-up questions right there on the question.</p>
+          </div>
         </div>
-        <h3><span class="n">3.</span> Keep the streak</h3>
-        <p>Earn XP, level up, and come back tomorrow.</p>
+        <div class="how-panel" role="tabpanel" id="panel-streak" aria-labelledby="tab-streak" tabindex="0">
+          <div class="phone-wrap">
+            <div class="phone">
+              <video data-autoplay muted loop playsinline preload="none" poster="assets/chargeup-poster.webp" aria-label="Lesson complete: XP, coins and streak cards count up while Ohmie celebrates" disablepictureinpicture disableremoteplayback width="496" height="1080" style="background-image:url('assets/chargeup-poster.webp')">
+                <source src="assets/chargeup.webm" type="video/webm">
+                <source src="assets/chargeup.mp4" type="video/mp4">
+              </video>
+              <img class="video-fallback" src="assets/chargeup-poster.webp" alt="" width="496" height="1080" loading="lazy">
+            </div>
+          </div>
+          <div class="how-card">
+            <h3>Streaks and levels that make 3&nbsp;minutes stick.</h3>
+            <p>Every lesson banks XP and keeps your streak alive. A Daily Charge every day — up to five questions, +15 XP.</p>
+          </div>
+        </div>
+        <div class="how-panel how-panel-wide" role="tabpanel" id="panel-arena" aria-labelledby="tab-arena" tabindex="0">
+          <div class="phone-wrap phone-wrap-wide">
+            <div class="phone phone-wide"><img src="assets/cap-07-world-town-2x.webp" alt="Copper Town in Ohmie World, played sideways: your inventor at the training hall, the goal Light your first LED at Pip's bench, and the move stick" width="1565" height="720" loading="lazy" decoding="async"></div>
+          </div>
+          <div class="how-card">
+            <h3>Walk into Copper Town. Light your first LED.</h3>
+            <p>Quiz-battle Watt, the practice bot — first to five wins. Sign in and challenge another inventor live, 20 seconds a question.</p>
+          </div>
+        </div>
       </div>
     </div>
-    <p class="how-cta reveal"><a class="text-link" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="how">Start 7 days free →</a></p>
+    <p class="how-cta"><a class="text-link" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="how">Start 7 days free →</a></p>
   </div>
 </section>
 
-<!-- ============ 4. FEATURE ROWS ============ -->
-<section class="rows">
-  <div class="wrap">
-    <h2 class="sr-only">What Ohmie gives you</h2>
-
-    <div class="row reveal">
-      <div class="tile tile-blue">
-        <div class="phone-wrap">
-          <div class="phone">
-            <img src="assets/cap-04-lesson0-2x.webp" alt="Lesson one's bench: Break the loop. Anywhere. A battery, a glowing lamp, and four bridges to tap open" width="720" height="1565" loading="lazy" decoding="async">
-          </div>
-        </div>
-      </div>
-      <div class="row-copy">
-        <p class="eyebrow">Hands-on from lesson one</p>
-        <h3>You don't watch electronics. You solve it.</h3>
-        <p class="lead">Tap the break in the loop. Fix the fault. Watch the lamp light up — on a circuit that actually responds.</p>
-        <p class="honest">Stuck? Every question has an explanation built in, plus a nudge if you need one — and signed-in subscribers can ask Ohmie follow-up questions right there.</p>
-      </div>
-    </div>
-
-    <div class="row row-flip reveal">
-      <div class="tile tile-deep tile-duo">
-        <div class="phone-wrap">
-          <div class="phone"><img src="assets/cap-06-explore-2x.webp" alt="Explore tab: a start-a-streak week row, join this week's leaderboard, the Enter the Arena card, search, and topic chips like Electricity Basics and Resistors" width="720" height="1565" loading="lazy" decoding="async"></div>
-        </div>
-        <div class="phone-wrap">
-          <div class="phone">
-            <img src="assets/cap-leaderboard-w.webp" alt="The weekly leaderboard: this week's top 50 ranked by XP, with your own row and how far ahead the next player is" width="720" height="1565" loading="lazy" decoding="async">
-          </div>
-        </div>
-      </div>
-      <div class="row-copy">
-        <p class="eyebrow">The Explore tab</p>
-        <h3>Search any topic. Race this week's leaderboard.</h3>
-        <p class="lead">Explore holds your streak, a search across every lesson, topic chips from Electricity Basics to Transistors, and this week's top-50 leaderboard. Miss a question and it goes into a review queue until you get it right.</p>
-      </div>
-    </div>
-
-    <div class="row reveal">
-      <div class="tile tile-amber tile-wide">
-        <div class="phone-wrap phone-wrap-wide">
-          <div class="phone phone-wide">
-            <img src="assets/cap-07-world-town-2x.webp" alt="Copper Town in Ohmie World, played sideways: your inventor at the training hall, the goal Light your first LED at Pip's bench, and the move stick" width="1565" height="720" loading="lazy" decoding="async">
-          </div>
-        </div>
-      </div>
-      <div class="row-copy">
-        <p class="eyebrow">New: Ohmie World</p>
-        <h3>Walk into Copper Town. Light your first LED.</h3>
-        <p class="lead">Ohmie World is a small town inside the app: wire real circuits on the workbench, then take on the Copper Trail's three trainers.</p>
-        <ul>
-          <li>Quiz-battle Watt, the practice bot — first to five wins.</li>
-          <li>Sign in and challenge another inventor live, 20 seconds a question.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="row row-flip reveal">
-      <div class="tile tile-blue">
-        <div class="phone-wrap">
-          <div class="phone">
-            <video data-autoplay muted loop playsinline preload="none" poster="assets/chargeup-poster.webp" aria-label="Lesson complete: XP, coins and streak cards count up while Ohmie celebrates" disablepictureinpicture disableremoteplayback width="496" height="1080" style="background-image:url('assets/chargeup-poster.webp')">
-              <source src="assets/chargeup.webm" type="video/webm">
-              <source src="assets/chargeup.mp4" type="video/mp4">
-            </video>
-            <img class="video-fallback" src="assets/chargeup-poster.webp" alt="" width="496" height="1080" loading="lazy">
-          </div>
-        </div>
-      </div>
-      <div class="row-copy">
-        <p class="eyebrow">Built to bring you back</p>
-        <h3>Streaks and levels that make 3&nbsp;minutes stick.</h3>
-        <p class="lead">Every lesson banks XP and keeps your streak alive.</p>
-        <ul>
-          <li>Level up from Spark to Circuit Apprentice, Conductor and Circuit Master.</li>
-          <li>A Daily Charge every day — up to five questions, +15 XP.</li>
-          <li>Protect your streak with a streak freeze.</li>
-        </ul>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ============ 5. SUBJECTS ============ -->
+<!-- ============ 4. SUBJECTS (dark band) ============ -->
 <span id="curriculum"></span>
 <section class="subjects" id="subjects">
   <div class="wrap">
-    <h2 class="reveal">It starts at "what is electricity?" and ends at robot navigation.</h2>
+    <h2>It starts at "what is electricity?" and ends at robot navigation.</h2>
 
-    <div class="tabs reveal" role="tablist" aria-label="Subjects">
+    <div class="tabs" role="tablist" aria-label="Subjects">
       <button class="tab" role="tab" id="tab-electronics" aria-controls="panel-electronics" aria-selected="true">Electronics</button>
-      <button class="tab" role="tab" id="tab-embedded" aria-controls="panel-embedded" aria-selected="false" tabindex="-1">Embedded Systems</button>
-      <button class="tab" role="tab" id="tab-programming" aria-controls="panel-programming" aria-selected="false" tabindex="-1">Programming</button>
-      <button class="tab" role="tab" id="tab-pcb" aria-controls="panel-pcb" aria-selected="false" tabindex="-1">PCB Design</button>
       <button class="tab" role="tab" id="tab-robotics" aria-controls="panel-robotics" aria-selected="false" tabindex="-1">Robotics</button>
+      <button class="tab" role="tab" id="tab-embedded" aria-controls="panel-embedded" aria-selected="false" tabindex="-1">Embedded Systems</button>
+      <button class="tab" role="tab" id="tab-architecture" aria-controls="panel-architecture" aria-selected="false" tabindex="-1">Computer Architecture</button>
+      <button class="tab" role="tab" id="tab-pcb" aria-controls="panel-pcb" aria-selected="false" tabindex="-1">PCB Design</button>
+      <button class="tab" role="tab" id="tab-programming" aria-controls="panel-programming" aria-selected="false" tabindex="-1">Programming</button>
     </div>
 
-    <div class="tab-panels reveal">
+    <div class="tab-panels">
       <div class="tab-panel is-active" role="tabpanel" id="panel-electronics" aria-labelledby="tab-electronics" tabindex="0">
-        <div>
-          <p class="num">01</p>
+        <div class="subject-card">
+          <p class="num">01 · 277 lessons</p>
           <h3>Electronics</h3>
-          <p class="count">240 lessons</p>
           <p class="blurb">Voltage, current, capacitors, op-amps, then transistors, logic gates and a computer you build — from your first spark to an 8-bit CPU.</p>
-          <p class="newline">One track in twelve chapters, now with AC: the wall's wave, analog signals on the scope, the transistor's 1947 breakthrough, the Logic Lab, and Inside the 8-Bit Computer, a whole computer running on your screen.</p>
+          <p class="newline">One track in thirteen chapters, now with AC: the wall's wave, analog signals on the scope, the transistor's 1947 breakthrough, the Logic Lab, and Inside the 8-Bit Computer, a whole computer running on your screen.</p>
+          <p class="chapters-label">Covered chapters</p>
+          <ul class="chapters">
+            <li>Basics</li><li>Analysis</li><li>Capacitors</li><li>Diodes</li><li>Power</li><li>Analog</li><li>AC</li><li>Switches</li>
+          </ul>
+          <details class="more">
+            <summary><span class="more-open">5 more chapters</span><span class="more-close">Fewer chapters</span></summary>
+            <ul class="chapters chapters-more"><li>Amplifiers</li><li>Silicon</li><li>Logic</li><li>Computers</li><li>History</li></ul>
+          </details>
         </div>
-        <div class="tab-media">
-          <div class="phone-wrap">
-            <div class="phone"><img src="assets/cap-10-subjects-2x.webp" alt="The Subjects picker: Electronics, Robotics, Embedded Systems, PCB Design, Programming, and a card to vote on what comes next" width="720" height="1565" loading="lazy" decoding="async"></div>
-          </div>
+        <div class="tab-media tab-media-art">
+          <img class="art" src="assets/art-transistors-w.webp" alt="A power transistor and a small signal transistor, rendered in 3D" width="560" height="608" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <div class="tab-panel" role="tabpanel" id="panel-robotics" aria-labelledby="tab-robotics" tabindex="0">
+        <div class="subject-card">
+          <p class="num">02 · 105 lessons</p>
+          <h3>Robotics</h3>
+          <p class="blurb">IMUs, sensor fusion, and SLAM — how a robot figures out where it is.</p>
+          <p class="chapters-label">Covered chapters</p>
+          <ul class="chapters"><li>Hardware</li><li>Arms</li><li>Control</li><li>Navigation</li></ul>
+        </div>
+        <div class="tab-media tab-media-art">
+          <img class="art" src="assets/art-imu-w.webp" alt="Two small motion-sensor chips, rendered in 3D" width="560" height="608" loading="lazy" decoding="async">
         </div>
       </div>
 
       <div class="tab-panel" role="tabpanel" id="panel-embedded" aria-labelledby="tab-embedded" tabindex="0">
-        <div>
-          <p class="num">02</p>
+        <div class="subject-card">
+          <p class="num">03 · 106 lessons</p>
           <h3>Embedded Systems</h3>
-          <p class="count">119 lessons</p>
           <p class="blurb">Where code meets copper: pins, analog reads, interrupts, and the sensors that feel the world.</p>
-          <p class="newline">New in 1.5.9: a CPU chapter, from what's inside a processor to ARM vs RISC-V, and GPIO rebuilt from scratch with animated scenes.</p>
+          <p class="chapters-label">Covered chapters</p>
+          <ul class="chapters"><li>Chips</li><li>Boards</li><li>Signals</li><li>Devices</li><li>Computers</li></ul>
         </div>
-        <div class="tab-media">
+        <div class="tab-media tab-media-art">
           <img class="art" src="assets/art-esp32-w.webp" alt="Two microcontroller boards, rendered in 3D" width="560" height="608" loading="lazy" decoding="async">
         </div>
       </div>
 
+      <div class="tab-panel" role="tabpanel" id="panel-architecture" aria-labelledby="tab-architecture" tabindex="0">
+        <div class="subject-card">
+          <p class="num">04 · 39 lessons</p>
+          <h3>Computer Architecture</h3>
+          <p class="blurb">CPU, GPU, the memory ladder.</p>
+          <p class="chapters-label">Covered chapters</p>
+          <ul class="chapters"><li>CPU</li><li>GPU</li><li>Memory</li></ul>
+        </div>
+        <div class="tab-media tab-media-art">
+          <svg class="art" viewBox="0 0 560 608" role="img" aria-label="A processor chip" preserveAspectRatio="xMidYMid slice">
+            <rect width="560" height="608" fill="#FBF8EE"/>
+            <g fill="#FFB020"><rect x="170" y="96" width="22" height="58" rx="6"/><rect x="222" y="96" width="22" height="58" rx="6"/><rect x="274" y="96" width="22" height="58" rx="6"/><rect x="326" y="96" width="22" height="58" rx="6"/><rect x="378" y="96" width="22" height="58" rx="6"/><rect x="170" y="454" width="22" height="58" rx="6"/><rect x="222" y="454" width="22" height="58" rx="6"/><rect x="274" y="454" width="22" height="58" rx="6"/><rect x="326" y="454" width="22" height="58" rx="6"/><rect x="378" y="454" width="22" height="58" rx="6"/><rect x="106" y="184" width="58" height="22" rx="6"/><rect x="106" y="236" width="58" height="22" rx="6"/><rect x="106" y="288" width="58" height="22" rx="6"/><rect x="106" y="340" width="58" height="22" rx="6"/><rect x="106" y="392" width="58" height="22" rx="6"/><rect x="396" y="184" width="58" height="22" rx="6"/><rect x="396" y="236" width="58" height="22" rx="6"/><rect x="396" y="288" width="58" height="22" rx="6"/><rect x="396" y="340" width="58" height="22" rx="6"/><rect x="396" y="392" width="58" height="22" rx="6"/></g>
+            <rect x="150" y="140" width="260" height="328" rx="34" fill="#14213D"/>
+            <rect x="190" y="190" width="180" height="180" rx="22" fill="none" stroke="#2EA8E6" stroke-width="6"/>
+            <path d="M190 250h180M190 310h180M250 190v180M310 190v180" stroke="#2EA8E6" stroke-width="3" opacity=".45"/>
+            <text x="280" y="430" text-anchor="middle" font-family="Nunito, sans-serif" font-weight="900" font-size="40" fill="#FFFCF5" letter-spacing="4">CPU</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="tab-panel" role="tabpanel" id="panel-pcb" aria-labelledby="tab-pcb" tabindex="0">
+        <div class="subject-card">
+          <p class="num">05 · 47 lessons</p>
+          <h3>PCB Design</h3>
+          <p class="blurb">From breadboard to board: lay out real PCBs in OhmieCAD.</p>
+          <p class="chapters-label">Covered chapters</p>
+          <ul class="chapters"><li>Basics</li><li>Design</li><li>Routing</li><li>Production</li></ul>
+        </div>
+        <div class="tab-media tab-media-art">
+          <img class="art" src="assets/art-pcb-w.webp" alt="A green circuit board, rendered in 3D" width="560" height="608" loading="lazy" decoding="async">
+        </div>
+      </div>
+
       <div class="tab-panel" role="tabpanel" id="panel-programming" aria-labelledby="tab-programming" tabindex="0">
-        <div>
-          <p class="num">03</p>
+        <div class="subject-card">
+          <p class="num">06 · 119 lessons</p>
           <h3>Programming</h3>
-          <p class="count">119 lessons, one track</p>
           <p class="blurb">One track with a Python / C++ switch: Python from zero (67 lessons), or Arduino C++ from your first blink to your own sensor lamp (52 lessons).</p>
+          <p class="chapters-label">Covered chapters</p>
+          <ul class="chapters chapters-rows"><li>Python: Basics · Data · Structure · Tools · Objects</li><li>C++: Arduino · Control · Sensing · Capstone</li></ul>
         </div>
         <div class="tab-media">
           <div class="phone-wrap">
@@ -325,90 +335,123 @@
           </div>
         </div>
       </div>
-
-      <div class="tab-panel" role="tabpanel" id="panel-pcb" aria-labelledby="tab-pcb" tabindex="0">
-        <div>
-          <p class="num">04</p>
-          <h3>PCB Design</h3>
-          <p class="count">47 lessons</p>
-          <p class="blurb">From breadboard to board: lay out real PCBs in OhmieCAD, the built-in board editor.</p>
-        </div>
-        <div class="tab-media">
-          <img class="art" src="assets/art-pcb-w.webp" alt="A green circuit board, rendered in 3D" width="560" height="608" loading="lazy" decoding="async">
-        </div>
-      </div>
-
-      <div class="tab-panel" role="tabpanel" id="panel-robotics" aria-labelledby="tab-robotics" tabindex="0">
-        <div>
-          <p class="num">05</p>
-          <h3>Robotics</h3>
-          <p class="count">105 lessons</p>
-          <p class="blurb">IMUs, sensor fusion, and SLAM — how a robot figures out where it is.</p>
-        </div>
-        <div class="tab-media">
-          <img class="art" src="assets/art-imu-w.webp" alt="Two small motion-sensor chips, rendered in 3D" width="560" height="608" loading="lazy" decoding="async">
-        </div>
-      </div>
     </div>
 
-    <p class="subjects-foot reveal">No prerequisites.<br>
-      <a class="text-link" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="subjects">Start at 01 — 7 days free →</a>
+    <p class="subjects-foot">No prerequisites.<br>
+      <a class="text-link text-link-light" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="subjects">Start at 01 — 7 days free →</a>
     </p>
   </div>
 </section>
 
-<!-- ============ 6. REVIEWS ============ -->
+<!-- ============ 5. PLAN PICKER ============ -->
+<section class="pricing" id="pricing">
+  <!-- No prices are printed on the page; spots that held one carry data-price as a marker.
+       Phones: Ohmie, heading, Yearly, Monthly, pill + badge, fine print. Desktop: cards centred under the H2,
+       Ohmie in the right gutter outside the pair. -->
+  <div class="wrap plans" id="plans" data-selected="yearly">
+    <div class="plan-mascot">
+      <img src="assets/ohmie-happy.webp" alt="" id="planMascotImg" width="150" height="145" loading="lazy" decoding="async">
+      <script>if (document.documentElement.classList.contains('halloween')) document.getElementById('planMascotImg').src = 'assets/ohmie-vampire.webp';</script>
+      <div class="plan-mascot-rive" id="planMascotRive" hidden aria-hidden="true" title="Tap Ohmie!"><canvas width="336" height="397"></canvas></div>
+    </div>
+    <h2 data-price="yearly">Start with 7 days free.</h2>
+    <div class="plan-cards" role="radiogroup" aria-label="Plan">
+      <label class="plan plan-yearly" for="plan-yearly">
+        <input type="radio" name="plan" id="plan-yearly" value="yearly" checked>
+        <span class="plan-flag">7 days free</span>
+        <span class="plan-name">Yearly</span>
+        <span class="plan-price" data-price="yearly">Free for 7 days</span>
+        <span class="plan-equiv" data-price="yearly">Then billed yearly.</span>
+      </label>
+      <label class="plan plan-monthly" for="plan-monthly">
+        <input type="radio" name="plan" id="plan-monthly" value="monthly">
+        <span class="plan-name">Monthly</span>
+        <span class="plan-price" data-price="monthly">Month to month</span>
+        <span class="plan-equiv" data-price="monthly">No free trial.</span>
+      </label>
+    </div>
+    <div class="plan-cta">
+      <a class="btn btn-amber" id="planBtn" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="pricing"><span data-plan="yearly">Start 7 days free</span><span data-plan="monthly">Get Ohmie</span></a>
+      <a class="store-badge store-badge-lg" id="planBadge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="pricing" aria-label="Download Ohmie on the App Store">
+        <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
+      </a>
+    </div>
+    <p class="plan-fine"><span data-plan="yearly" data-price="yearly">7 days free, then billed yearly. You'll see the price in the app before you start. Renews automatically unless canceled in the App Store.</span><span data-plan="monthly" data-price="monthly">Billed monthly. You'll see the price in the app before you start. Renews automatically unless canceled in the App Store.</span></p>
+  </div>
+</section>
+
+<!-- ============ 6. EVERYTHING IN OHMIE ============ -->
+<section class="everything">
+  <div class="wrap">
+    <h2>Everything in Ohmie</h2>
+    <div class="everything-grid">
+      <div class="check-col">
+        <ul class="check-list">
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>690+ lessons</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Live circuit benches</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Narrated lessons (English)</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Daily Charge</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Streaks and streak freezes</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Weekly leaderboard</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Ohmie World and the Arena</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>OhmieCAD</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Python and C++ for Arduino</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Widgets</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>5 languages</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>No ads</li>
+          <li><svg class="chk" aria-hidden="true" focusable="false"><use href="#chk"/></svg>Progress sync with Sign in with Apple</li>
+        </ul>
+      </div>
+      <div class="new-col">
+        <p class="eyebrow">New in 1.6.3</p>
+        <!-- phones: the notes sit behind this details (script.js closes it under 60rem); wider screens hide the summary and keep it open; JS off = open everywhere -->
+        <details class="new-details" open>
+          <summary>What's new in 1.6.3</summary>
+          <ul class="new-list">
+            <li><strong>Ohmie has a new voice:</strong> every narrated lesson is now read in a more natural voice, a little quicker than before.</li>
+            <li><strong>The Arduino Crash Course:</strong> on Explore's new Crash courses row, meet the breadboard and the board, then wire and code your first light.</li>
+            <li><strong>Words with diagrams:</strong> tap an underlined word in a lesson for a plain definition and an example, and most words now come with a drawn diagram.</li>
+            <li><strong>Op-amps for beginners:</strong> Meet the Op-Amp, Control the Signal and Build Useful Circuits, twenty-four lessons with new animations.</li>
+            <li><strong>Fixes from your reports:</strong> lesson benches fit the iPad in any orientation, the LED bench in "Checkpoint: control the flow" finishes as soon as your reading is right, and the flashlight, current split, push and spinning-magnet benches respond the way you'd expect.</li>
+            <li class="hw-only"><strong>Halloween is here.</strong> Ohmie wears his vampire cape until November 1.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. REVIEWS + FAQ ============ -->
 <section class="reviews">
   <div class="wrap">
-    <h2 class="reveal">What people say on the App Store</h2>
-    <div class="review-track reveal">
+    <h2>What people say on the App Store</h2>
+    <div class="review-track">
       <article class="review">
-        <div class="stars" role="img" aria-label="5 stars">★★★★★</div>
+        <svg class="stars" role="img" aria-label="5 out of 5 stars" viewBox="0 0 120 24" width="100" height="20"><use href="#star" width="24" height="24"/><use href="#star" x="24" width="24" height="24"/><use href="#star" x="48" width="24" height="24"/><use href="#star" x="72" width="24" height="24"/><use href="#star" x="96" width="24" height="24"/></svg>
         <h3>Easy to understand and fun to learn!</h3>
         <p>I’m a student learning about electronics and electrical engineering. I like how fun and easy this app makes learning.</p>
         <cite>bird_coffin</cite>
       </article>
       <article class="review">
-        <div class="stars" role="img" aria-label="5 stars">★★★★★</div>
+        <svg class="stars" role="img" aria-label="5 out of 5 stars" viewBox="0 0 120 24" width="100" height="20"><use href="#star" width="24" height="24"/><use href="#star" x="24" width="24" height="24"/><use href="#star" x="48" width="24" height="24"/><use href="#star" x="72" width="24" height="24"/><use href="#star" x="96" width="24" height="24"/></svg>
         <h3>Amazing</h3>
         <p>I wasn’t expecting much but wow! So easy to learn and understand, it is helping me a lot at work and my hobbies.</p>
         <cite>HarryChoppa</cite>
       </article>
       <article class="review">
-        <div class="stars" role="img" aria-label="5 stars">★★★★★</div>
+        <svg class="stars" role="img" aria-label="5 out of 5 stars" viewBox="0 0 120 24" width="100" height="20"><use href="#star" width="24" height="24"/><use href="#star" x="24" width="24" height="24"/><use href="#star" x="48" width="24" height="24"/><use href="#star" x="72" width="24" height="24"/><use href="#star" x="96" width="24" height="24"/></svg>
         <h3>My first interactions</h3>
-        <p>I was not expecting a lot but holy moly. This app will sure teach you what you need to know. […] I was thinking not paying for the subscription but it is totally worthy.</p>
+        <p>I was not expecting a lot but holy moly. This app will sure teach you what you need to know. [...] I was thinking not paying for the subscription but it is totally worthy.</p>
         <cite>AsiusG3112</cite>
       </article>
     </div>
-    <p class="reviews-foot reveal"><a class="text-link" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="reviews">See all reviews on the App Store →</a></p>
+    <p class="reviews-foot"><a class="text-link" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="reviews">See all reviews on the App Store →</a></p>
   </div>
-</section>
 
-<!-- ============ 7. PRICING ============ -->
-<section class="pricing" id="pricing">
-  <div class="wrap">
-    <h2 class="reveal">7 days free. Then $29.99 a year.</h2>
-    <div class="plans reveal">
-      <div class="plan plan-best">
-        <span class="plan-flag">7 days free</span>
-        <p class="plan-name">Yearly</p>
-        <p class="plan-price">$29.99<span>/yr</span></p>
-        <p class="plan-equiv">That's $2.50/mo, billed yearly</p>
-        <a class="btn btn-amber" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="pricing">Start 7 days free</a>
-      </div>
-      <p class="plan-alt">Or <a class="text-link" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="pricing_monthly">$7.99/mo, billed monthly →</a></p>
-    </div>
-    <p class="reassure reveal">7 days free, then $29.99/yr. Or $7.99/mo. Cancel anytime in the App Store.</p>
-  </div>
-</section>
-
-<!-- ============ 8. FAQ ============ -->
-<span id="why"></span>
-<section class="faq" id="faq">
-  <div class="wrap">
-    <h2 class="reveal">Questions, answered</h2>
-    <div class="faq-list reveal">
+  <span id="why"></span>
+  <div class="wrap faq" id="faq">
+    <h2>Questions, answered</h2>
+    <div class="faq-list">
       <details class="faq-item">
         <summary>Do I need any hardware or a breadboard?</summary>
         <p>No. Every circuit is simulated and playable right in the app — though builds are real enough to copy onto your desk.</p>
@@ -419,31 +462,15 @@
       </details>
       <details class="faq-item">
         <summary>How far does it actually go?</summary>
-        <p>Five subjects — Electronics, Embedded Systems, Programming, PCB Design and Robotics — take you from Ohm's law to what's happening inside a transistor, through a computer you build, then on to IMUs, sensor fusion and SLAM. It's the same short, hands-on lesson rhythm the whole way; the ideas just get bigger.</p>
+        <p>Six subjects — Electronics, Robotics, Embedded Systems, Computer Architecture, PCB Design and Programming — take you from Ohm's law to what's happening inside a transistor, through a computer you build, then on to IMUs, sensor fusion and SLAM. It's the same short, hands-on lesson rhythm the whole way; the ideas just get bigger.</p>
       </details>
       <details class="faq-item">
         <summary>What if I get stuck on a question?</summary>
         <p>Ask Ohmie. Every question has a built-in explanation, plus a nudge if you need one, and signed-in subscribers can ask Ohmie follow-up questions right there on the question.</p>
       </details>
       <details class="faq-item">
-        <summary>Which languages does Ohmie speak?</summary>
-        <p>English, Spanish, Czech and Brazilian Portuguese. Lesson narration stays English for now.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Which devices does it run on?</summary>
-        <p>iPhone and iPad. There's no Android or web version.</p>
-      </details>
-      <details class="faq-item">
         <summary>Is there a free version?</summary>
-        <p>No — Ohmie is a paid app. Pick Yearly and the first 7 days are free; cancel before day 7 and you pay nothing. Monthly is $7.99/mo. There's no ad-supported tier.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Does it work offline?</summary>
-        <p>Once you're in, lessons, circuits, hints and narration all work offline. Signing up, the leaderboard, progress sync and Ask Ohmie need a connection.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Is it OK for kids?</summary>
-        <p>Ohmie is rated 4+ on the App Store and written for adult beginners. Teens do fine with it.</p>
+        <p>No — Ohmie is a paid app. Pick Yearly and the first 7 days are free; cancel before day 7 and you pay nothing. You'll see the price in the app before you start. There's no ad-supported tier.</p>
       </details>
       <details class="faq-item">
         <summary>Can I cancel anytime?</summary>
@@ -453,19 +480,28 @@
   </div>
 </section>
 
-<!-- ============ 9. FINAL CTA ============ -->
+<!-- ============ 8. FINAL CTA: checklist + mascot ============ -->
 <section class="final" id="final">
-  <div class="wrap">
-    <img src="assets/ohmie-happy.webp" alt="" class="final-mascot" id="finalMascotImg" width="120" height="116" loading="lazy" decoding="async">
-    <script>if (document.documentElement.classList.contains('halloween')) document.getElementById('finalMascotImg').src = 'assets/ohmie-vampire.webp';</script>
-    <div class="final-mascot-rive" id="finalMascotRive" hidden aria-hidden="true" title="Tap Ohmie!"><canvas width="232" height="274"></canvas></div>
-    <h2>Your first circuit is 3&nbsp;minutes away.</h2>
-    <p class="section-sub">7 days free on Yearly. Cancel anytime in the App Store.</p>
-    <div class="final-buttons">
-      <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="final_cta" aria-label="Download Ohmie on the App Store">
-        <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
-      </a>
-      <p class="fine-print">7 days free, then $29.99/yr. Or $7.99/mo. <span class="nowrap">iPhone and iPad.</span></p>
+  <div class="wrap final-grid">
+    <div class="final-copy">
+      <h2>Your first circuit is 3&nbsp;minutes away.</h2>
+      <ul class="final-list">
+        <li><svg class="ico32" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EA8E6"/><stop offset="0.36" stop-color="#2EA8E6"/><stop offset="0.52" stop-color="#FFB020"/><stop offset="1" stop-color="#FFD84D"/></linearGradient></defs><rect x="3" y="5" width="26" height="24" rx="5" fill="url(#g5)"/><path d="M3 10a5 5 0 0 1 5-5h16a5 5 0 0 1 5 5v3H3v-3z" fill="#136A97"/><rect x="9" y="2" width="3" height="6" rx="1.5" fill="#136A97"/><rect x="20" y="2" width="3" height="6" rx="1.5" fill="#136A97"/><path d="M11 20.5l3.4 3.3L21.5 17" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>7 days free on Yearly</li>
+        <li><svg class="ico32" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="g6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EA8E6"/><stop offset="0.36" stop-color="#2EA8E6"/><stop offset="0.52" stop-color="#FFB020"/><stop offset="1" stop-color="#FFD84D"/></linearGradient></defs><rect x="2" y="9.5" width="28" height="13" rx="6.5" fill="url(#g6)"/><circle cx="22.5" cy="16" r="4.6" fill="#fff"/><path d="M8 16h7" stroke="#14213D" stroke-width="2.2" stroke-linecap="round"/></svg>Cancel anytime in the App Store</li>
+        <li><svg class="ico32" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="g7" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EA8E6"/><stop offset="0.36" stop-color="#2EA8E6"/><stop offset="0.52" stop-color="#FFB020"/><stop offset="1" stop-color="#FFD84D"/></linearGradient></defs><path d="M16 2.5l11 4.2v8.4c0 6.4-4.4 11.1-11 14.4C9.4 26.2 5 21.5 5 15.1V6.7l11-4.2z" fill="url(#g7)"/><circle cx="16" cy="15.5" r="5.2" fill="none" stroke="#14213D" stroke-width="2.4"/><path d="M12.5 12l7 7" stroke="#14213D" stroke-width="2.4" stroke-linecap="round"/></svg>No ads</li>
+        <li><svg class="ico32" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="g8" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2EA8E6"/><stop offset="0.36" stop-color="#2EA8E6"/><stop offset="0.52" stop-color="#FFB020"/><stop offset="1" stop-color="#FFD84D"/></linearGradient></defs><rect x="2.5" y="4" width="18" height="24" rx="3.5" fill="url(#g8)"/><rect x="22" y="9" width="7.5" height="19" rx="2.5" fill="#136A97"/><circle cx="11.5" cy="24.5" r="1.4" fill="#fff"/><rect x="8.5" y="6.5" width="6" height="1.6" rx=".8" fill="#fff"/></svg>iPhone and iPad</li>
+      </ul>
+      <div class="final-buttons">
+        <a class="store-badge store-badge-lg" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" data-placement="final_cta" aria-label="Download Ohmie on the App Store">
+          <img src="assets/app-store-badge.svg" alt="" width="120" height="40">
+        </a>
+        <p class="fine-print"><span data-price="yearly">7 days free on Yearly.</span> <span class="nowrap">iPhone and iPad.</span></p>
+      </div>
+    </div>
+    <div class="final-visual">
+      <img src="assets/ohmie-happy.webp" alt="" class="final-mascot" id="finalMascotImg" width="260" height="251" loading="lazy" decoding="async">
+      <script>if (document.documentElement.classList.contains('halloween')) document.getElementById('finalMascotImg').src = 'assets/ohmie-vampire.webp';</script>
+      <div class="final-mascot-rive" id="finalMascotRive" hidden aria-hidden="true" title="Tap Ohmie!"><canvas width="560" height="662"></canvas></div>
     </div>
   </div>
 </section>
@@ -492,7 +528,7 @@
   <p class="footer-copyright">© 2026 Ohmie LLC. All rights reserved.</p>
 </footer>
 
-<!-- ============ STICKY BAR (phones only) ============ -->
+<!-- ============ 9. STICKY BAR (phones only) ============ -->
 <div class="sticky-bar" id="stickyBar" aria-hidden="true">
   <img src="assets/app-icon-128.png?v=20261005" alt="" width="40" height="40">
   <div class="sticky-text"><strong>Ohmie</strong><span>3 minutes a day</span></div>
@@ -501,6 +537,6 @@
   </a>
 </div>
 
-<script src="script.js?v=20261009e" defer onerror="document.documentElement.classList.remove('js')"></script>
+<script src="script.js?v=20261018c" defer onerror="document.documentElement.classList.remove('js')"></script>
 </body>
 </html>

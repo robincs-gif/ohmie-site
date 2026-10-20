@@ -1,9 +1,12 @@
 /* ============================================================
    Ohmie — Learn Real Electronics
-   Redesign 2026-09-14: Brilliant's skeleton, Ohmie's skin, built as a funnel.
-   Nine sections + a phone-only sticky bar. Tokens from the app
-   (cream/electric/amber/mascot); the darker electric and ink-mid keep
-   text above 4.5:1 on cream.
+   October 2026 design: a cream page base, cream as the one neutral band (one notch
+   deeper so it still separates from the base), warm 1 px hairlines, one Ohmie
+   gradient (a short sky start, the electric tint, lifting through pale gold into
+   amber, then gold, interpolated in oklab) at three intensities, a navy subjects band with
+   an electric glow, a soft gold glow behind the hero phone, Nunito 900 display in
+   navy, the amber pill that drops on press. No scroll-reveal. Nine bands + a
+   phone-only sticky bar; tokens from the app.
    ============================================================ */
 @font-face {
   font-family: 'Nunito';
@@ -14,11 +17,12 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 :root {
-  --cream: #FBF9F1;
-  --cream-deep: #F5F0E2;
+  --base: #FBF9F1;             /* the page base: the app's cream; white bands alternate with it */
+  --cream: #F8F3E6;            /* the neutral band, one notch deeper than the app's #FBF9F1 so it still reads on the warm base */
+  --cream-deep: #F1E9D5;
   --electric: #2EA8E6;
-  --electric-dk: #136A97;      /* 5.63:1 on cream — links, eyebrows, panel numbers */
-  --electric-display: #1A97D6; /* 3.09:1 on cream — display-size text only (h1 accent), never body or links */
+  --electric-dk: #136A97;      /* 5.80:1 on the base, 5.36:1 on cream — links, eyebrows */
+  --electric-display: #1A97D6; /* 3.18:1 on the base — display-size text only (h1 accent), never body or links */
   --electric-tint: #EAF6FD;
   --amber: #FFB020;
   --amber-dk: #D68F0A;
@@ -26,284 +30,455 @@
   --heart: #FF4B4B;            /* in-app hearts only; never body text */
   --leaf: #58CC02;
   --leaf-dk: #46A302;
-  --leaf-text: #2F7A00;        /* 5.1:1 on white — the only green text on the page */
+  --leaf-text: #2F7A00;        /* 5.25:1 on the base, 4.85:1 on cream — the only green text on the page */
   --ink: #3C3C3C;
-  --ink-mid: #666666;          /* 5.45:1 cream, 5.04:1 cream-deep */
+  --ink-mid: #6B6257;          /* warm grey: 5.84:1 on the base, 5.40:1 on cream, 5.26:1 on cream-deep */
   --lock: #C9C4B8;
   --stroke: #E8E2D2;
   --gold: #FFD84D;
-  --navy: #14213D;
+  --navy: #14213D;             /* headline ink: h1, h2 and the price figures */
   --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-6: 1.5rem;
   --s-8: 2rem; --s-12: 3rem; --s-16: 4rem; --s-24: 6rem;
   --r-card: 16px; --r-big: 30px;
   --shadow-card: 0 1px 20px rgba(220, 214, 194, 0.5);
   --content-w: 72rem;
+  /* evolved tokens (2026-10-18) */
+  --hair: rgba(60, 50, 20, 0.12);                /* the warm 1 px hairline, everywhere a 2 px --stroke border used to be */
+  --hair-light: rgba(255, 255, 255, 0.14);       /* hairline on the navy band */
+  /* The one Ohmie gradient: a short sky start (the electric tint, so the corner reads as a highlight, not a cold
+     patch) that lifts through pale gold into amber, then gold. The bridge stop keeps the blue-to-amber handoff off
+     olive and grey. These sRGB declarations are the fallback; the @supports block below swaps in the oklab
+     interpolation where it exists (Safari 16.2+, Chrome 111+). The icon gradients (g1-g8 in index.html) keep their
+     own electric start. */
+  --grad: linear-gradient(118deg, #8FD0F0 0%, #FFCB5C 6%, #FFB020 14%, #FFD84D 100%);
+  --grad-20: linear-gradient(118deg, rgba(143,208,240,0.22) 0%, rgba(255,203,92,0.22) 6%, rgba(255,176,32,0.22) 14%, rgba(255,216,77,0.22) 100%);
+  --band: clamp(2.5rem, 1rem + 4.5vw, 5rem);     /* 40 px on phones → 80 px at 1440 */
+  --control: 48px;
+  --r-ui: 20px;
+}
+@supports (background: linear-gradient(90deg in oklab, #000, #fff)) {
+  :root {
+    --grad: linear-gradient(118deg in oklab, #8FD0F0 0%, #FFCB5C 6%, #FFB020 14%, #FFD84D 100%);
+    --grad-20: linear-gradient(118deg in oklab, rgba(143,208,240,0.22) 0%, rgba(255,203,92,0.22) 6%, rgba(255,176,32,0.22) 14%, rgba(255,216,77,0.22) 100%);
+  }
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
 body {
   margin: 0;
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-weight: 600; color: var(--ink); background: var(--cream);
-  overflow-x: hidden; -webkit-font-smoothing: antialiased; line-height: 1.55; font-size: 16px;
+  font-weight: 600; color: var(--ink); background: var(--base);
+  overflow-x: hidden; -webkit-font-smoothing: antialiased; line-height: 1.5; font-size: 16px;
 }
 img, video { max-width: 100%; height: auto; }
-h1, h2, h3 { margin: 0; line-height: 1.15; font-weight: 800; }
-h1, h2, .row-copy h3, .hero-sub, .section-sub { text-wrap: balance; }
-h2 { font-size: clamp(1.75rem, 1.2rem + 2.5vw, 3rem); font-weight: 900; text-align: center; letter-spacing: -0.02em; }
+h1, h2, h3 { margin: 0; line-height: 1.15; font-weight: 900; }
+h1, h2 { color: var(--navy); }
+h1, h2, .hero-sub, .section-sub, .how-card h3 { text-wrap: balance; }
+h2 { font-size: clamp(1.75rem, 1.45rem + 1.1vw, 2.25rem); line-height: 1.2; font-weight: 900; text-align: center; letter-spacing: -0.02em; }
 p { margin: 0; }
 a { color: var(--electric-dk); }
-.wrap { max-width: var(--content-w); margin: 0 auto; padding-inline: var(--s-6); }
-section { padding-block: var(--s-16); }
-@media (min-width: 60rem) { section { padding-block: var(--s-24); } }
+.wrap { max-width: var(--content-w); margin: 0 auto; padding-inline: var(--s-4); }
+@media (min-width: 40rem) { .wrap { padding-inline: var(--s-6); } }
+section { padding-block: var(--band); }
 .section-sub { text-align: center; color: var(--ink-mid); font-size: clamp(1rem, 0.9rem + 0.5vw, 1.185rem); max-width: 38rem; margin: var(--s-4) auto 0; }
 .eyebrow { color: var(--electric-dk); font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.875rem; margin: 0 0 var(--s-3); }
 .note { font-size: 0.875rem; color: var(--ink-mid); }
 :focus-visible { outline: 3px solid var(--electric-dk); outline-offset: 3px; border-radius: 6px; }
 .nowrap { white-space: nowrap; }
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+/* stars are the shared #star symbol (an image, role="img" on each use), never an amber glyph */
+.star { width: 1em; height: 1em; vertical-align: -0.12em; }
+.stars { display: inline-block; vertical-align: middle; }
 
-/* buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); text-decoration: none; font-weight: 900; border-radius: 999px; padding: 0.95rem 1.75rem; font-size: 1.05rem; line-height: 1; transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease; white-space: nowrap; }
-.btn-amber { background: var(--amber); color: #3b2a00; box-shadow: 0 4px 0 var(--amber-dk); }
-.btn-amber:hover { transform: translateY(-1px); background: #ffb93a; }
-.btn-amber:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--amber-dk); }
+/* data-price marks the spots that can hold a price; it is a marker only, no rule reads it */
+
+/* buttons: the amber pill is an object — a solid face over a 4 px --amber-dk edge that drops on press (no gradient on the CTA) */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); text-decoration: none; font-weight: 900; border-radius: 999px; padding: 0 1.75rem; min-height: var(--control); font-size: 1.05rem; line-height: 1; transition: transform 0.1s ease-out, box-shadow 0.1s ease-out, background 0.1s ease-out; white-space: nowrap; }
+.btn-amber { background: var(--amber); color: #3b2a00; box-shadow: 0 4px 0 var(--amber-dk); transform: translateY(-2px); }
+.btn-amber:hover { background: #ffb93a; }
+.btn-amber:active { transform: translateY(2px); box-shadow: 0 0 0 var(--amber-dk); }
 .text-link { color: var(--electric-dk); font-weight: 800; text-decoration: none; font-size: 1.05rem; }
 .text-link:hover { text-decoration: underline; }
 .store-badge { display: inline-block; line-height: 0; border-radius: 8px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.store-badge img { width: 128px; height: auto; display: block; }
+.store-badge img { width: 120px; height: auto; display: block; }
 .store-badge-lg img { width: 156px; }
-.store-badge:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(60,60,60,0.25); }
+.store-badge:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(60,50,20,0.25); }
 
-/* reveal (only when JS present; never on the hero) */
-html.js .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
-html.js .reveal.in-view { opacity: 1; transform: none; }
-
-/* ============ nav ============ */
-.site-header { position: sticky; top: 0; z-index: 50; background: rgba(251,249,241,0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(232,226,210,0.6); }
-.header-inner { max-width: var(--content-w); margin: 0 auto; padding: var(--s-3) var(--s-6); display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); }
-.brand { display: inline-flex; align-items: center; gap: var(--s-2); text-decoration: none; color: var(--ink); }
+/* ============ 0. nav: the base, hairline + 15 px shadow ============ */
+.site-header { position: sticky; top: 0; z-index: 50; background: var(--base); border-bottom: 1px solid var(--hair); box-shadow: 0 0 15px rgba(60,50,20,0.08); }
+.header-inner { max-width: var(--content-w); margin: 0 auto; padding: var(--s-3) var(--s-4); display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); min-height: 64px; }
+.brand { display: inline-flex; align-items: center; gap: var(--s-2); text-decoration: none; color: var(--navy); }
 .brand-mark { width: 36px; height: 36px; }
 .brand-word { font-size: 1.375rem; font-weight: 900; letter-spacing: -0.01em; }
 .site-nav { display: none; gap: var(--s-8); }
-.site-nav a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 0.95rem; }
-.site-nav a:hover { color: var(--electric-dk); }
-.header-cta .store-badge img { width: 108px; }
-@media (min-width: 52rem) { .site-nav { display: flex; } .header-cta .store-badge img { width: 120px; } }
+.site-nav a { color: var(--ink); text-decoration: none; font-weight: 800; font-size: 1rem; transition: opacity 0.15s ease; }
+.site-nav a:hover { opacity: 0.7; }
+.header-cta { display: flex; }
+.header-cta .store-badge img { width: 120px; }
+@media (min-width: 40rem) { .header-inner { padding-inline: var(--s-6); } }
+@media (min-width: 52rem) { .site-nav { display: flex; } }
 
 /* ============ phone bezel (CSS only) ============ */
-/* Every .phone gets a raw 603x1311 screen (no bezel baked in). Three sizes on the page:
-   hero 340, feature/tab (fills its tile), thumbnail (duo tiles, 80% of tile height). */
-.phone { position: relative; width: 100%; aspect-ratio: 603 / 1311; background: #1c1c1e; border-radius: 12.5%/5.75%; padding: 2.2%; box-shadow: 0 18px 40px rgba(60,50,20,0.22), inset 0 0 0 1px rgba(255,255,255,0.08); overflow: hidden; }
+.phone { position: relative; width: 100%; aspect-ratio: 603 / 1311; background: #1c1c1e; border-radius: 12.5%/5.75%; padding: 2.2%; box-shadow: 0 24px 48px rgba(20,33,61,0.22), 0 2px 6px rgba(20,33,61,0.12), inset 0 0 0 1px rgba(255,255,255,0.08); overflow: hidden; }
 .phone > img, .phone > video { position: absolute; inset: 2.2%; width: 95.6%; height: 95.6%; object-fit: cover; object-position: top; border-radius: 10.5%/4.8%; display: block; background: var(--cream); }
 .phone > video { background-size: cover; background-position: top; }
 .phone-wrap { position: relative; }
-
-/* ============ 1. hero ============ */
-.hero { padding-top: var(--s-8); padding-bottom: var(--s-12); overflow: hidden; }
-.hero-grid { max-width: var(--content-w); margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: var(--s-8); align-items: center; }
-.proof-pill { display: none; align-items: center; gap: var(--s-2); background: #fff; border: 2px solid var(--stroke); border-radius: 999px; padding: var(--s-2) var(--s-4); font-size: 0.875rem; font-weight: 800; box-shadow: var(--shadow-card); margin-bottom: var(--s-6); }
-.proof-pill .star { color: var(--amber); }
-.hero h1 { font-size: clamp(2.25rem, 1.5rem + 3.2vw, 3.25rem); letter-spacing: -0.03em; font-weight: 900; }
-.hero h1 .blue { color: var(--electric-display); }
-.hero-sub { color: var(--ink-mid); font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.3rem); max-width: 30rem; margin: var(--s-6) 0 var(--s-8); }
-.hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); }
-.hero-cta .btn { display: none; }
-.hero-cta .store-badge { display: inline-block; }
-.fine-print { margin: var(--s-4) 0 0; font-size: 0.875rem; color: var(--ink-mid); }
-.hero-visual { position: relative; display: flex; justify-content: center; padding-bottom: 2.5rem; }
-.hero-visual .phone { width: min(300px, 76vw); }
-.hero-mascot { position: absolute; left: calc(50% + 56px); bottom: 0; width: clamp(96px, 24vw, 150px); z-index: 4; filter: drop-shadow(0 10px 16px rgba(203,154,6,0.35)); animation: bob 3.6s ease-in-out infinite; }
-.hero-mascot-rive { position: absolute; left: calc(50% + 50px); bottom: -6px; width: clamp(104px, 26vw, 168px); aspect-ratio: 220/260; z-index: 4; cursor: pointer; }
-.hero-mascot-rive canvas { display: block; width: 100%; height: 100%; }
-@keyframes bob { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
-@media (min-width: 40rem) {
-  .proof-pill { display: inline-flex; }
-  .hero-cta .btn { display: inline-flex; width: auto; }
-  .hero-cta .store-badge { display: inline-block; }
-}
-@media (min-width: 60rem) {
-  .hero { padding-top: var(--s-16); padding-bottom: var(--s-16); }
-  .hero-grid { grid-template-columns: 1.1fr 1fr; gap: var(--s-12); align-items: start; }
-  .hero-copy { padding-top: var(--s-8); }
-  .hero-visual .phone { width: min(340px, 30vw); }
-}
-
-/* ============ 2. proof band (inline stats, no cards) ============ */
-.proof { padding-top: 0; padding-bottom: var(--s-8); }
-.proof-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); padding: var(--s-3) 0; border-top: 1px solid var(--stroke); border-bottom: 1px solid var(--stroke); }
-.proof-stat { text-align: center; padding: var(--s-2) var(--s-1); }
-.proof-stat + .proof-stat { border-left: 1px solid var(--stroke); }
-.proof-num { font-size: 1.5rem; font-weight: 900; line-height: 1; color: var(--ink); letter-spacing: -0.02em; }
-.proof-num .star { color: var(--amber); }
-/* New in this update: a short strip under the proof band */
-.whatsnew { padding-top: 0; padding-bottom: var(--s-8); }
-.whatsnew .eyebrow { margin-bottom: var(--s-3); }
-.whatsnew-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: var(--s-2); }
-.whatsnew-list li { background: #fff; border: 2px solid var(--stroke); border-radius: var(--r-card); padding: var(--s-3) var(--s-4); color: var(--ink-mid); font-weight: 700; line-height: 1.45; }
-.whatsnew-list strong { color: var(--ink); font-weight: 900; }
-@media (min-width: 40rem) { .whatsnew-list { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 60rem) { .whatsnew-list { grid-template-columns: repeat(4, 1fr); } }
-/* Halloween on the strip (.halloween is on <html> from October 1 to November 1). Outside the window the season's
-   card (.hw-only, kept last) is gone: the row is three across, and at two across the odd card left over takes the
-   full width. Inside it every card wears a pumpkin edge, deeper on the season's own. The edge is an inset shadow,
-   so no card changes size; orange never goes on text (it fails contrast on white). */
-html:not(.halloween) .whatsnew-list li.hw-only { display: none; }
-@media (min-width: 40rem) and (max-width: 59.99rem) { html:not(.halloween) .whatsnew-list li:nth-last-child(2):nth-child(odd) { grid-column: 1 / -1; } }
-@media (min-width: 60rem) { html:not(.halloween) .whatsnew-list { grid-template-columns: repeat(3, 1fr); } }
-html.halloween .whatsnew-list li { box-shadow: inset 0 3px 0 #FF8A1F; }
-html.halloween .whatsnew-list li.hw-only { box-shadow: inset 0 5px 0 #E2650C; }
-.proof-label { color: var(--ink-mid); font-weight: 700; margin-top: var(--s-1); font-size: 0.75rem; line-height: 1.3; }
-@media (min-width: 40rem) {
-  .proof-row { gap: var(--s-6); padding: var(--s-6) 0; }
-  .proof-num { font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem); }
-  .proof-label { font-size: 0.95rem; margin-top: var(--s-2); }
-}
-
-/* ============ 3. how it works ============ */
-.steps { margin: var(--s-12) auto 0; display: grid; grid-template-columns: 1fr; gap: var(--s-12); justify-items: center; }
-.step { text-align: center; max-width: 20rem; }
-.step .phone-wrap { width: min(240px, 60vw); margin: 0 auto var(--s-6); }
-.step h3 { font-size: 1.25rem; }
-.step h3 .n { color: var(--electric-dk); }
-.step p { color: var(--ink-mid); margin-top: var(--s-2); font-size: 0.95rem; }
-.how-cta { text-align: center; margin-top: var(--s-12); }
-@media (min-width: 60rem) { .steps { grid-template-columns: repeat(3, 1fr); gap: var(--s-8); } }
-
-/* ============ 4. feature rows (identical media boxes) ============ */
-.rows { padding-top: var(--s-8); }
-.row { display: grid; grid-template-columns: 1fr; gap: var(--s-8); align-items: center; margin-bottom: var(--s-16); }
-.row:last-child { margin-bottom: 0; }
-.tile { border-radius: var(--r-big); padding: clamp(1rem, 3vw, 2rem); display: flex; justify-content: center; align-items: center; gap: clamp(0.75rem, 2vw, 1.25rem); width: 100%; aspect-ratio: 4 / 5; min-height: 0; }
-.tile-blue { background: var(--electric-tint); }
-.tile-deep { background: var(--cream-deep); }
-.tile-amber { background: var(--amber-tint); }
-.tile .phone-wrap { height: 100%; aspect-ratio: 603 / 1311; flex: 0 0 auto; }
-.tile .phone { width: 100%; height: 100%; }
-.tile-duo .phone-wrap { height: 80%; }
-.row-copy h3 { font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.35rem); font-weight: 900; letter-spacing: -0.02em; line-height: 1.12; }
-.row-copy .lead { font-size: 1.125rem; color: var(--ink); opacity: 0.85; margin-top: var(--s-4); max-width: 30rem; }
-.row-copy ul { margin: var(--s-4) 0 0; padding-left: 1.2rem; color: var(--ink); opacity: 0.85; max-width: 30rem; }
-.row-copy li { margin-bottom: var(--s-2); }
-.row-copy .honest { margin-top: var(--s-4); font-size: 0.875rem; color: var(--ink-mid); border-left: 3px solid var(--amber); padding-left: var(--s-3); }
-@media (min-width: 60rem) {
-  .row { grid-template-columns: 1fr 1fr; gap: var(--s-12); }
-  .tile { aspect-ratio: 1 / 1; }
-  .row-flip .tile { order: 2; }
-  .row-flip .row-copy { order: 1; }
-}
-/* Ohmie World plays sideways (1.5.9): the same phone on its side, same bezel and corners. */
-.tile.tile-wide { aspect-ratio: auto; }
-.tile .phone-wrap-wide { width: 100%; height: auto; aspect-ratio: 1311 / 603; }
+.phone-wrap-wide { width: 100%; height: auto; aspect-ratio: 1311 / 603; }
 .phone-wide { aspect-ratio: 1311 / 603; border-radius: 5.75%/12.5%; }
 .phone-wide > img { border-radius: 4.8%/10.5%; }
+.video-fallback { display: none; position: absolute; inset: 2.2%; width: 95.6%; height: 95.6%; object-fit: cover; object-position: top; border-radius: 10.5%/4.8%; }
 
-/* ============ 5. subjects ============ */
-.subjects { background: var(--cream-deep); }
-.tabs { display: flex; gap: var(--s-2); overflow-x: auto; padding: var(--s-2) 0 var(--s-4); margin-top: var(--s-8); scrollbar-width: none; -webkit-overflow-scrolling: touch; -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
-.tabs::-webkit-scrollbar { display: none; }
-.tabs::after { content: ""; flex: 0 0 15%; }
-.tab { flex: 0 0 auto; background: #fff; border: 2px solid var(--stroke); color: var(--ink); border-radius: 999px; padding: 0.6rem 1.1rem; font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; white-space: nowrap; }
-.tab[aria-selected="true"] { background: var(--electric-dk); border-color: var(--electric-dk); color: #fff; }
-.tab-panels { margin-top: var(--s-4); }
-.tab-panel { display: grid; grid-template-columns: 1fr; gap: var(--s-8); align-items: start; background: #fff; border: 2px solid var(--stroke); border-radius: var(--r-big); padding: clamp(1.25rem, 4vw, 2.5rem); margin-bottom: var(--s-6); min-height: 34rem; }
-html.js .tab-panel:not(.is-active) { display: none; }
-.tab-panel .num { color: var(--electric-dk); font-weight: 900; font-size: 0.9rem; letter-spacing: 0.1em; }
-.tab-panel h3 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); font-weight: 900; margin-top: var(--s-1); }
-.tab-panel .count { font-weight: 800; color: var(--ink-mid); margin-top: var(--s-2); }
-.tab-panel .blurb { margin-top: var(--s-3); color: var(--ink); opacity: 0.85; }
-.tab-panel .newline { margin-top: var(--s-3); font-size: 0.95rem; }
-.tab-media { background: var(--cream-deep); border-radius: var(--r-card); aspect-ratio: 4 / 5; width: 100%; display: grid; place-items: center; padding: var(--s-4); overflow: hidden; }
-.tab-media .phone-wrap { height: 100%; aspect-ratio: 603 / 1311; }
-.tab-media .phone { width: 100%; height: 100%; }
-.tab-media .art { width: min(88%, 340px); height: auto; border-radius: 0; box-shadow: none; mix-blend-mode: multiply; }
-.subjects-foot { text-align: center; margin-top: var(--s-8); font-weight: 800; font-size: 1.125rem; }
-.subjects-foot .text-link { display: inline-block; margin-top: var(--s-2); }
+/* ============ 1. hero (the base, a soft gold glow behind the phone) ============ */
+.hero { padding-top: var(--s-8); padding-bottom: var(--s-8); overflow: hidden; }
+.hero-grid { display: grid; grid-template-columns: 1fr; gap: var(--s-8); align-items: center; }
+.proof-pill { display: none; align-items: center; gap: var(--s-2); background: #fff; border: 1px solid var(--hair); border-radius: 999px; padding: 0 var(--s-4); min-height: 40px; font-size: 0.9375rem; font-weight: 800; color: var(--ink); margin-bottom: var(--s-6); }
+.proof-pill .star { width: 16px; height: 16px; vertical-align: -0.2em; margin: 0 0.1em; }
+.hero h1 { font-size: clamp(2.125rem, 1.4rem + 2.6vw, 3.5rem); line-height: 1.1; letter-spacing: -0.025em; font-weight: 900; }
+/* the H1 accent: display blue over a 7 px gradient highlighter bar */
+.hero h1 .blue { color: var(--electric-display); background-image: var(--grad); background-repeat: no-repeat; background-size: 100% 7px; background-position: 0 90%; padding: 0 0.04em; margin: 0 -0.04em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.hero-sub { color: var(--ink-mid); font-size: clamp(1.0625rem, 0.95rem + 0.45vw, 1.25rem); line-height: 1.5; max-width: 30rem; margin: var(--s-4) 0 var(--s-6); }
+.hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4) var(--s-6); }
+.hero-cta .btn { display: none; }
+.hero-cta .store-badge { display: inline-block; }
+.fine-print { margin: var(--s-4) 0 0; font-size: 0.875rem; line-height: 1.5; color: var(--ink-mid); }
+.hero-visual { position: relative; display: flex; justify-content: center; padding-bottom: 2.25rem; }
+/* the warm glow: a soft amber-to-gold radial behind the phone, inside the band (the hero clips it); no band wash */
+.hero-glow { position: absolute; inset: -10% -28% -4%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,176,32,0.40) 0%, rgba(255,216,77,0.30) 45%, rgba(255,216,77,0) 100%); z-index: 0; pointer-events: none; }
+.hero-visual .phone-wrap { z-index: 1; }
+.hero-visual .phone { width: min(260px, 68vw); }
+.hero-mascot { position: absolute; left: calc(50% + 46px); bottom: 0; width: clamp(96px, 24vw, 150px); z-index: 4; filter: drop-shadow(0 10px 16px rgba(203,154,6,0.3)); }
+.hero-mascot-rive { position: absolute; left: calc(50% + 40px); bottom: -6px; width: clamp(104px, 26vw, 168px); aspect-ratio: 220/260; z-index: 4; cursor: pointer; }
+.hero-mascot-rive canvas { display: block; width: 100%; height: 100%; }
+.hero-mascot[hidden], .hero-mascot-rive[hidden] { display: none; }
+@media (min-width: 40rem) {
+  .hero { padding-top: var(--s-12); }
+  .proof-pill { display: inline-flex; }
+  .hero-cta .btn { display: inline-flex; width: auto; }
+  .hero-visual .phone { width: min(300px, 40vw); }
+}
 @media (min-width: 60rem) {
-  .tabs { flex-wrap: wrap; justify-content: center; overflow: visible; -webkit-mask-image: none; mask-image: none; }
-  .tabs::after { content: none; }   /* the 15% scroll spacer would wrap onto row 2 and push a wrapped tab off-centre */
-  .tab { padding: 0.6rem 0.7rem; }  /* eight tabs on one row at 60rem+ (1,104px strip; 0.95rem overflowed by 52px) */
-  .tab-panel { grid-template-columns: 1.2fr 1fr; align-items: center; }
-  .tab-media { aspect-ratio: 1 / 1; padding: var(--s-6); }
+  /* copy and phone top-aligned (no dead air above the pill); the copy sits in the phone's upper third */
+  .hero { padding-top: var(--s-12); padding-bottom: var(--s-16); }
+  .hero-grid { grid-template-columns: 1.3fr 1fr; gap: var(--s-12); align-items: start; }
+  .hero-copy { padding-top: 2.5rem; }
+  .hero-visual .phone { width: min(300px, 25vw); }
+  .hero-visual { padding-bottom: 2.5rem; }
+  .hero-glow { inset: -16% -48% -8%; }           /* wider field on desktop: light behind the phone, not a rim; the hero still clips it */
 }
 
-/* ============ 6. reviews ============ */
-.review-track { display: flex; gap: var(--s-4); overflow-x: auto; padding: var(--s-8) 0 var(--s-4); scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-.review { flex: 0 0 min(82vw, 20rem); scroll-snap-align: start; background: #fff; border: 2px solid var(--stroke); border-radius: var(--r-card); padding: var(--s-6); box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--s-2); }
-.review .stars { color: var(--amber); letter-spacing: 0.12em; font-size: 1rem; }
-.review h3 { font-size: 1.05rem; font-weight: 900; }
-.review p { color: var(--ink); opacity: 0.85; font-size: 0.95rem; }
+/* ============ 2. proof strip (cream): three tiles + the quote ============ */
+.proof { background: #fff; padding-block: var(--s-8); }
+.proof-row { display: grid; grid-template-columns: 1fr; gap: 0; }
+/* phones: stacked rows, number | label, so every label stays on one line */
+.proof-stat { display: grid; grid-template-columns: 6rem 1fr; column-gap: var(--s-4); align-items: baseline; text-align: left; padding: var(--s-3) 0; border-top: 1px solid var(--hair); }
+.proof-stat:first-child { border-top: 0; padding-top: 0; }
+.proof-num { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 1.25rem; font-weight: 900; line-height: 1.1; color: var(--navy); letter-spacing: -0.01em; white-space: nowrap; }
+.proof-num .star { width: 18px; height: 18px; }
+.proof-label { color: var(--ink); font-weight: 700; font-size: 0.9375rem; line-height: 1.3; }
+.proof-date { grid-column: 2; color: var(--ink-mid); font-weight: 600; font-size: 0.875rem; line-height: 1.3; margin-top: 2px; }
+.proof-quote { margin: var(--s-4) 0 0; padding: var(--s-4) 0 0; border-top: 1px solid var(--hair); text-align: left; }
+.proof-quote p { font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem); line-height: 1.35; font-weight: 800; color: var(--navy); text-wrap: balance; max-width: 36rem; margin: 0; }
+.proof-quote .ell { font-weight: 600; color: var(--ink-mid); }   /* the trim marks, lighter than the words */
+.proof-quote cite { display: inline-flex; align-items: center; gap: var(--s-2); font-style: normal; font-weight: 800; color: var(--ink-mid); font-size: 0.875rem; margin-top: var(--s-3); }
+.proof-quote .stars { width: 80px; height: 16px; flex: 0 0 auto; }
+@media (min-width: 40rem) {
+  .proof-row { grid-template-columns: repeat(3, 1fr); gap: var(--s-4); align-items: start; }   /* the three numbers and labels share a line; the date hangs under tile 1 */
+  .proof-stat { display: block; text-align: center; border-top: 0; padding: var(--s-2) var(--s-2); }
+  .proof-stat:first-child { padding-top: var(--s-2); }   /* the phone rule above strips tile 1's top padding; side by side all three tiles share it */
+  .proof-stat + .proof-stat { border-left: 1px solid var(--hair); }
+  .proof-label { margin-top: var(--s-1); }
+  .proof-quote { grid-column: 1 / -1; text-align: center; margin-top: var(--s-6); padding-top: var(--s-6); }
+  .proof-quote p { margin: 0 auto; }
+}
+@media (min-width: 60rem) {
+  .proof { padding-block: var(--s-12); }
+  .proof-row { grid-template-columns: 1.15fr 1fr 1fr 2fr; gap: var(--s-4); }
+  .proof-stat { padding: var(--s-2) var(--s-4); }
+  .proof-num { font-size: 1.75rem; }
+  .proof-num .star { width: 24px; height: 24px; }
+  .proof-label { font-size: 1rem; }
+  .proof-quote { grid-column: auto; align-self: center; margin: 0; padding: var(--s-2) 0 var(--s-2) var(--s-8); border-top: 0; border-left: 1px solid var(--hair); text-align: left; }
+  .proof-quote p { margin: 0; }
+}
+
+/* ============ 3. how it works: tab list + phone ============
+   Phones: a pill strip over a scroll-snap carousel, each panel a phone + its card (title + sentence).
+   Desktop: the tab list beside the phone, top-aligned; the selected row tints amber and reveals its one
+   sentence beneath its label, so the separate card goes. With JS off every sentence shows and the panels stack. */
+.how-grid { margin-top: var(--s-8); display: grid; grid-template-columns: 1fr; gap: var(--s-6); align-items: start; }
+.how-tabs { display: flex; gap: var(--s-2); overflow-x: auto; padding: var(--s-1) 0 var(--s-3); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.how-tabs::-webkit-scrollbar { display: none; }
+.how-tab { flex: 0 0 auto; display: inline-flex; align-items: center; gap: var(--s-3); background: #fff; border: 1px solid var(--hair); color: var(--ink); border-radius: 999px; padding: 0 1rem 0 0.75rem; min-height: 44px; font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; white-space: nowrap; transition: background 0.1s ease-out, border-color 0.1s ease-out; }
+.how-tab .ico { width: 24px; height: 24px; flex: 0 0 auto; }
+.how-tab .how-sent { display: none; }
+.how-tab[aria-selected="true"] { background: var(--amber-tint); border-color: transparent; box-shadow: inset 0 0 0 1px var(--hair); }
+.how-tab:hover { background: var(--amber-tint); }
+.how-panels { display: flex; gap: var(--s-4); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--s-4); -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-inline: calc(-1 * var(--s-4)); padding-inline: var(--s-4); }   /* scroll-padding = the track's own padding, so the first panel snaps at scrollLeft 0 with its 16 px gutter */
+.how-panels::-webkit-scrollbar { display: none; }
+.how-panel { flex: 0 0 100%; scroll-snap-align: start; display: grid; grid-template-columns: 1fr; gap: var(--s-4); justify-items: center; align-content: start; }
+.how-panel .phone-wrap { width: min(224px, 58vw); }
+.how-panel-wide .phone-wrap { width: min(100%, 520px); }
+.how-card { background: var(--cream); border: 1px solid var(--hair); border-radius: var(--r-ui); padding: var(--s-6); width: 100%; max-width: 28rem; }
+.how-card h3 { font-size: 1.125rem; line-height: 1.25; letter-spacing: -0.01em; color: var(--navy); }
+.how-card p { margin-top: var(--s-2); color: var(--ink); font-size: 1rem; line-height: 1.5; }
+.how-cta { text-align: center; margin-top: var(--s-8); }
+@keyframes how-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (min-width: 60rem) {
+  .how-grid { grid-template-columns: minmax(0, 24rem) 1fr; gap: var(--s-16); align-items: start; margin-top: var(--s-12); max-width: 60rem; margin-inline: auto; }
+  .how-tabs { flex-direction: column; gap: var(--s-1); overflow: visible; padding: 0; }
+  .how-tab { display: grid; grid-template-columns: 28px 1fr; column-gap: var(--s-4); align-items: center; text-align: left; border-radius: 16px; border-color: transparent; background: transparent; padding: var(--s-4); min-height: 60px; font-size: 1.125rem; width: 100%; white-space: normal; color: var(--navy); }
+  .how-tab .ico { width: 28px; height: 28px; }
+  .how-tab:hover { background: rgba(60,50,20,0.05); }
+  .how-tab[aria-selected="true"] { background: var(--amber-tint); box-shadow: none; }
+  .how-tab .how-sent { grid-column: 2; font-weight: 600; color: var(--ink); font-size: 1rem; line-height: 1.5; margin-top: var(--s-1); }
+  .how-tab[aria-selected="true"] .how-sent, html:not(.js) .how-tab .how-sent { display: block; }
+  .how-panels { display: block; overflow: visible; margin: 0; padding: 0; }
+  html.js .how-panel:not(.is-active) { display: none; }
+  .how-panel { display: grid; grid-template-columns: 1fr; gap: var(--s-6); justify-items: center; align-content: start; min-height: 0; }
+  .how-panel + .how-panel { margin-top: var(--s-8); }            /* only visible with JS off, when the panels stack */
+  .how-panel .how-card { display: none; }
+  .how-panel .phone-wrap { width: 264px; }
+  .how-panel-wide .phone-wrap { width: 100%; max-width: 560px; }
+  html.js .how-panel.is-active { animation: how-fade 0.1s ease-out; }
+}
+
+/* ============ 4. subjects: navy band, electric glow from the bottom edge ============ */
+.subjects { background: radial-gradient(70% 55% at 50% 102%, rgba(46,168,230,0.55) 0%, rgba(46,168,230,0.18) 45%, rgba(46,168,230,0) 72%), var(--navy); color: #fff; }
+.subjects h2 { color: #fff; }
+.tabs { display: flex; gap: var(--s-2); overflow-x: auto; padding: var(--s-2) 0 var(--s-4); margin-top: var(--s-6); scrollbar-width: none; -webkit-overflow-scrolling: touch; -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs::after { content: ""; flex: 0 0 15%; }
+.tab { flex: 0 0 auto; background: linear-gradient(0deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)); border: 1px solid var(--hair-light); color: rgba(255,255,255,0.78); border-radius: 999px; padding: 0 1.1rem; min-height: 40px; font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; white-space: nowrap; transition: background 0.1s ease-out, color 0.1s ease-out; }
+.tab:hover { color: #fff; }
+.tab[aria-selected="true"] { background: #fff; border-color: #fff; color: var(--navy); }
+.tab-panels { margin-top: var(--s-4); }
+.tab-panel { display: grid; grid-template-columns: 1fr; gap: var(--s-4); align-items: stretch; margin-bottom: var(--s-6); }
+html.js .tab-panel:not(.is-active) { display: none; }
+.subject-card { background: rgba(255,255,255,0.08); border: 1px solid var(--hair-light); border-radius: var(--r-big); padding: clamp(1.25rem, 4vw, 2.5rem); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+/* letter-spaced eyebrows, 14 px: "01 · 277 LESSONS" in electric (5.9:1 on navy), "COVERED CHAPTERS" in muted white */
+.subject-card .num { color: var(--electric); font-weight: 900; font-size: 0.875rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.subject-card h3 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); font-weight: 900; margin-top: var(--s-2); color: #fff; }
+.subject-card .blurb { margin-top: var(--s-3); color: rgba(255,255,255,0.88); line-height: 1.5; }
+.subject-card .newline { margin-top: var(--s-3); font-size: 0.95rem; color: rgba(255,255,255,0.72); line-height: 1.5; }
+.chapters-label { margin-top: var(--s-6); font-weight: 900; font-size: 0.875rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.72); }
+.chapters { list-style: none; margin: var(--s-2) 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-1) var(--s-4); color: rgba(255,255,255,0.88); font-size: 1rem; line-height: 1.5; }
+.chapters-rows { grid-template-columns: 1fr; }   /* Programming: one row per track (Python, C++) */
+/* "5 more chapters": the details opens inline, its chapters continuing the same two-column grid (never a popover over
+   the list). The trigger is Ohmie's own light text link, electric with a chevron that flips open, and reads
+   "Fewer chapters" once open. */
+.more { margin-top: var(--s-2); }
+.more summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 0.45em; color: var(--electric); font-weight: 800; }
+.more summary::-webkit-details-marker { display: none; }
+.more summary::after { content: ""; width: 0.5em; height: 0.5em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-0.15em) rotate(45deg); transition: transform 0.1s ease-out; }
+.more[open] summary::after { transform: translateY(0.12em) rotate(-135deg); }
+.more summary:hover { color: #fff; }
+.more .more-close, .more[open] .more-open { display: none; }
+.more[open] .more-close { display: inline; }
+.more .chapters-more { margin-top: var(--s-2); }
+.tab-media { background: #fff; border-radius: var(--r-big); aspect-ratio: 1 / 1; width: 100%; display: grid; place-items: center; padding: var(--s-6); overflow: hidden; }
+.tab-media .phone-wrap { height: 100%; aspect-ratio: 603 / 1311; }
+.tab-media .phone { width: 100%; height: 100%; box-shadow: 0 16px 36px rgba(20,33,61,0.18), inset 0 0 0 1px rgba(255,255,255,0.08); }
+/* the four 3D renders are the card: their own warm paper (#FBF8EE at the top) fills it edge to edge, no white frame, no
+   blend; the paper colour is the load-time fallback. The transistors render carries its heatsink tab 23 px from the top
+   edge, so it crops from the bottom only; the other three crop centred (their subjects sit mid-frame). */
+.tab-media.tab-media-art { position: relative; padding: 0; background: #FBF8EE; }   /* two classes, so the 60rem .tab-media padding never wins */
+.tab-media-art .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; border-radius: inherit; box-shadow: none; display: block; }
+#panel-electronics .tab-media-art .art { object-position: 50% 0; }
+.placeholder-tile { width: 100%; height: 100%; display: grid; place-items: center; text-align: center; padding: var(--s-6); border: 1px dashed var(--hair); border-radius: var(--r-ui); color: var(--ink-mid); font-weight: 800; background: var(--cream); }
+.subjects-foot { text-align: center; margin-top: var(--s-4); font-weight: 800; font-size: 1.125rem; color: rgba(255,255,255,0.88); }
+.subjects-foot .text-link { display: inline-block; margin-top: var(--s-2); }
+.text-link-light { color: var(--electric); }  /* 5.9:1 on navy; never amber or gold as text */
+@media (min-width: 60rem) {
+  .tabs { flex-wrap: wrap; justify-content: center; overflow: visible; -webkit-mask-image: none; mask-image: none; margin-top: var(--s-8); }
+  .tabs::after { content: none; }
+  .tab-panels { margin-top: var(--s-6); }
+  .tab-panel { grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+  .tab-media { aspect-ratio: auto; min-height: 28rem; padding: var(--s-8); }
+  .tab-media .phone-wrap { height: 24rem; }
+  .subject-card { padding: var(--s-8) var(--s-12); display: flex; flex-direction: column; justify-content: center; }
+}
+
+/* ============ 5. plan picker: the one washed-gradient band ============
+   The wash: the Ohmie gradient (an electric hint at the far left, bridged through sky and pale gold like --grad so the
+   handoff never goes grey-blue, then amber to gold) under 75% white, fading into the page base at the top and bottom
+   edges. sRGB first, oklab where supported; phones pull amber in to 16% so only a hint of blue shows. */
+.pricing { --wash-stops: #2EA8E6 0%, #8FD0F0 5%, #FFCB5C 12%, #FFB020 24%, #FFD84D 100%; text-align: center; background:
+  linear-gradient(180deg, #fff 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, #fff 100%),
+  linear-gradient(0deg, rgba(255,255,255,0.75), rgba(255,255,255,0.75)),
+  linear-gradient(100deg, var(--wash-stops)); }
+@supports (background: linear-gradient(90deg in oklab, #000, #fff)) {
+  .pricing { background:
+    linear-gradient(180deg, #fff 0%, rgba(255,255,255,0) 18%, rgba(255,255,255,0) 82%, #fff 100%),
+    linear-gradient(0deg, rgba(255,255,255,0.75), rgba(255,255,255,0.75)),
+    linear-gradient(100deg in oklab, var(--wash-stops)); }
+}
+@media (max-width: 39.99rem) { .pricing { --wash-stops: #2EA8E6 0%, #8FD0F0 3.5%, #FFCB5C 8%, #FFB020 16%, #FFD84D 100%; } }
+/* Layout: one grid (.plans, also the .wrap). Phones: Ohmie, heading, Yearly, Monthly, pill + badge, fine print, so
+   the CTA follows the choice directly. 60rem+: a 1fr | 44rem | 1fr grid centres the cards, CTA and fine print under
+   the H2, and Ohmie stands in the right gutter outside the card pair, card height, feet on the CTA baseline. */
+.plans { display: grid; grid-template-columns: minmax(0, 1fr); }
+.plan-mascot { order: -1; position: relative; width: 112px; aspect-ratio: 220/260; justify-self: center; margin: 0 0 var(--s-4); }
+.plan-mascot img { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; height: auto; display: block; filter: drop-shadow(0 10px 16px rgba(203,154,6,0.3)); }
+.plan-mascot-rive { position: absolute; inset: 0; cursor: pointer; }
+.plan-mascot-rive canvas { display: block; width: 100%; height: 100%; }
+.plan-mascot img[hidden], .plan-mascot-rive[hidden] { display: none; }
+.plan-cards { display: grid; grid-template-columns: 1fr; gap: var(--s-4); width: 100%; max-width: 22rem; justify-self: center; margin-top: var(--s-8); }
+.plan { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--s-1); text-align: center; padding: var(--s-6) var(--s-6) var(--s-6); border-radius: var(--r-ui); cursor: pointer; border: 4px solid transparent; background: linear-gradient(#fff, #fff) padding-box, var(--grad-20) border-box; min-height: 8rem; justify-content: center; transition: box-shadow 0.1s ease-out; }
+.plan input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.plan:has(input:checked) { background: linear-gradient(#fff, #fff) padding-box, var(--grad) border-box; }
+.plan:has(input:focus-visible) { outline: 3px solid var(--electric-dk); outline-offset: 3px; }
+/* the trial flag: navy, uppercase, letter-spaced (no amber on the amber frame) */
+.plan-flag { position: absolute; top: -0.85rem; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; font-weight: 900; font-size: 0.875rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 0.35rem 0.8rem; line-height: 1; white-space: nowrap; }   /* 14 px: never below the phone minimum */
+.plan-name { font-weight: 900; font-size: 1.25rem; color: var(--ink); }
+.plan-price { font-weight: 900; font-size: 2.25rem; line-height: 1; letter-spacing: -0.02em; color: var(--navy); }
+.plan-price span { font-size: 1rem; color: var(--ink-mid); font-weight: 800; letter-spacing: 0; }
+.plan-equiv { color: var(--ink-mid); font-weight: 700; font-size: 0.9375rem; line-height: 1.4; max-width: 17rem; }
+.plan-cta { margin-top: var(--s-8); display: flex; flex-direction: column; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--s-3); }   /* phones: pill over badge in both plan states, so choosing a plan never moves the row */
+.plan-fine { margin: var(--s-4) auto 0; color: var(--ink-mid); font-size: 0.875rem; line-height: 1.5; max-width: 40rem; }
+[data-plan="monthly"] { display: none; }
+.plans[data-selected="monthly"] [data-plan="yearly"] { display: none; }
+.plans[data-selected="monthly"] [data-plan="monthly"] { display: inline; }
+@media (min-width: 40rem) {
+  .plan-cards { grid-template-columns: 1fr 1fr; max-width: 44rem; gap: var(--s-6); }
+  .plan { padding: var(--s-8) var(--s-6); min-height: 9.5rem; }
+  .plan-price { font-size: 2.5rem; }
+  .plan-cta { flex-direction: row; gap: var(--s-4) var(--s-6); }
+}
+@media (min-width: 60rem) {
+  .plans { grid-template-columns: 1fr minmax(0, 44rem) 1fr; }
+  .plans > h2, .plan-cards, .plan-cta, .plan-fine { grid-column: 2; }
+  /* Ohmie stands beside the cards at card height (about 200 px at 1440), feet on the cards' bottom edge, eyes level
+     with the plan names; the width eases down toward 60rem so he stays inside the gutter on narrower desktops */
+  .plan-mascot { order: 0; grid-column: 3; grid-row: 2 / 3; align-self: end; justify-self: start; width: clamp(132px, 11.8vw, 170px); margin: 0 0 0 var(--s-6); }
+}
+
+/* ============ 6. everything in Ohmie: gradient-framed check column + what's new ============ */
+.everything-grid { margin-top: var(--s-8); display: grid; grid-template-columns: 1fr; gap: var(--s-6); align-items: start; max-width: 60rem; margin-inline: auto; }
+/* the check column: two compact columns (~44 px rows) from 360 px up, amber disc + navy tick, one colour per bullet */
+.check-col { border: 4px solid transparent; border-radius: var(--r-big); background: linear-gradient(#fff, #fff) padding-box, var(--grad) border-box; padding: var(--s-3) var(--s-4); }
+.check-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 0 var(--s-4); }
+.check-list li { display: flex; align-items: center; gap: var(--s-2); min-height: 44px; padding: var(--s-1) 0; font-weight: 800; font-size: 0.875rem; line-height: 1.3; border-top: 1px solid var(--hair); }
+.check-list li:first-child { border-top: 0; }
+.chk { width: 22px; height: 22px; flex: 0 0 auto; }
+@media (min-width: 22.5rem) {
+  .check-list { grid-template-columns: 1fr 1fr; }
+  .check-list li:nth-child(2) { border-top: 0; }
+  .check-list li:last-child { grid-column: 1 / -1; }   /* the thirteenth row (the longest label) takes the full width: one line, no empty cell beside it */
+}
+/* the "New in 1.6.3" card: on phones its six notes sit behind a <details> ("What's new in 1.6.3", closed by script.js);
+   60rem+ shows the eyebrow, hides the summary and keeps the notes open; JS off keeps the HTML's open attribute */
+.new-col { background: var(--cream); border: 1px solid var(--hair); border-radius: var(--r-big); padding: var(--s-2) var(--s-6); }
+.new-col .eyebrow { display: none; }
+.new-details summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); font-weight: 900; font-size: 1.0625rem; color: var(--navy); padding: var(--s-4) 0; }
+.new-details summary::-webkit-details-marker { display: none; }
+.new-details summary::after { content: "+"; color: var(--electric-dk); font-size: 1.5rem; font-weight: 900; line-height: 1; flex: 0 0 auto; }
+.new-details[open] summary::after { content: "–"; }
+.new-list { list-style: none; margin: 0; padding: var(--s-1) 0 var(--s-4); display: grid; gap: var(--s-3); }
+.new-list li { font-size: 0.9375rem; line-height: 1.5; color: var(--ink); opacity: 0.88; padding-left: 1.1rem; position: relative; }
+.new-list li::before { content: ""; position: absolute; left: 0; top: 0.55rem; width: 8px; height: 8px; border-radius: 50%; background: var(--electric); }
+.new-list strong { font-weight: 900; color: var(--ink); }
+html:not(.halloween) .new-list li.hw-only { display: none; }
+html.halloween .new-col { box-shadow: inset 0 4px 0 #FF8A1F; }
+@media (min-width: 60rem) {
+  .everything { padding-top: var(--s-12); }      /* the wash above fades into the same base: less air between the two bands */
+  .everything-grid { grid-template-columns: 1.15fr 1fr; gap: var(--s-8); max-width: none; align-items: stretch; }  /* the check rows stay one line; the notes card sets the band height and both cards share its bottom edge */
+  .check-col { padding: var(--s-4) var(--s-6); display: flex; flex-direction: column; justify-content: center; }
+  .check-list { column-gap: var(--s-6); }
+  .check-list li { font-size: 0.9375rem; gap: var(--s-3); }
+  .chk { width: 24px; height: 24px; }
+  .new-col { padding: var(--s-6) var(--s-8); }
+  .new-col .eyebrow { display: block; margin-bottom: var(--s-3); }
+  .new-details summary { display: none; }
+  .new-list { padding: 0; }
+}
+
+/* ============ 7. reviews + FAQ (cream) ============ */
+.reviews { background: var(--cream); }
+.review-track { display: flex; gap: var(--s-4); overflow-x: auto; padding: var(--s-6) var(--s-4) var(--s-3); margin-inline: calc(-1 * var(--s-4)); scroll-snap-type: x mandatory; scroll-padding-inline: var(--s-4); -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.review-track::-webkit-scrollbar { display: none; }
+.review { flex: 0 0 min(82vw, 20rem); scroll-snap-align: start; background: #fff; border: 1px solid var(--hair); border-radius: var(--r-ui); padding: var(--s-6); display: flex; flex-direction: column; gap: var(--s-2); }
+.review .stars { display: block; width: 100px; height: 20px; }
+.review h3 { font-size: 1.0625rem; font-weight: 900; }
+.review p { color: var(--ink); opacity: 0.85; font-size: 1rem; line-height: 1.5; }
 .review cite { font-style: normal; font-weight: 800; color: var(--ink-mid); font-size: 0.875rem; margin-top: auto; }
 .reviews-foot { text-align: center; margin-top: var(--s-4); }
-@media (min-width: 60rem) { .review-track { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; gap: var(--s-6); } .review { flex: initial; } }
-
-/* ============ 7. pricing (one card, one button) ============ */
-.plans { margin-top: var(--s-12); max-width: 24rem; margin-inline: auto; }
-.plan { background: #fff; border: 2px solid var(--stroke); border-radius: var(--r-big); padding: var(--s-8); text-align: center; position: relative; display: flex; flex-direction: column; gap: var(--s-2); }
-.plan-best { border-color: var(--amber); box-shadow: 0 8px 30px rgba(255,176,32,0.18); }
-.plan-flag { position: absolute; top: -0.9rem; left: 50%; transform: translateX(-50%); background: var(--amber); color: #3b2a00; font-weight: 900; font-size: 0.875rem; border-radius: 999px; padding: 4px 14px; letter-spacing: 0.04em; white-space: nowrap; }
-.plan-name { font-weight: 900; font-size: 1.1rem; color: var(--ink-mid); }
-.plan-price { font-weight: 900; font-size: 2.5rem; line-height: 1; letter-spacing: -0.02em; }
-.plan-price span { font-size: 1rem; color: var(--ink-mid); font-weight: 800; }
-.plan-equiv { color: var(--leaf-text); font-weight: 800; }
-.plan .btn { margin-top: var(--s-4); align-self: center; }
-.plan-alt { text-align: center; margin-top: var(--s-4); color: var(--ink-mid); font-weight: 700; }
-.reassure { text-align: center; color: var(--ink-mid); margin-top: var(--s-6); font-size: 0.95rem; }
-
-/* ============ 8. FAQ ============ */
-.faq-list { max-width: 44rem; margin: var(--s-12) auto 0; display: flex; flex-direction: column; gap: var(--s-3); }
-.faq-item { background: #fff; border: 2px solid var(--stroke); border-radius: var(--r-card); padding: 0 var(--s-6); }
-.faq-item summary { cursor: pointer; font-weight: 900; font-size: 1.05rem; padding: var(--s-4) 0; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); }
+.faq { margin-top: var(--s-6); }
+.faq::before { content: ""; display: block; border-top: 1px solid var(--hair); margin-bottom: var(--s-6); }   /* the rule sits inside the wrap's padding, on the content width like the cards above it */
+.faq-list { max-width: 44rem; margin: var(--s-6) auto 0; display: flex; flex-direction: column; gap: var(--s-3); }
+.faq-item { background: #fff; border: 1px solid var(--hair); border-radius: var(--r-card); padding: 0 var(--s-6); }
+.faq-item summary { cursor: pointer; font-weight: 900; font-size: 1.0625rem; padding: var(--s-4) 0; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-item summary::after { content: "+"; color: var(--electric-dk); font-size: 1.5rem; font-weight: 900; line-height: 1; flex: 0 0 auto; }
 .faq-item[open] summary::after { content: "–"; }
-.faq-item p { padding-bottom: var(--s-4); color: var(--ink); opacity: 0.85; }
+.faq-item p { padding-bottom: var(--s-4); color: var(--ink); opacity: 0.85; line-height: 1.5; }
+@media (min-width: 60rem) {
+  .review-track { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; gap: var(--s-6); margin: 0; padding: var(--s-6) 0 var(--s-3); }
+  .review { flex: initial; padding: var(--s-8); }
+  .faq { margin-top: var(--s-8); }
+  .faq::before { margin-bottom: var(--s-8); }
+  .faq-list { margin-top: var(--s-8); }
+}
 
-/* ============ 9. final CTA ============ */
-.final { text-align: center; }
-.final-mascot { width: 120px; margin: 0 auto var(--s-4); display: block; }
-/* The live Rive Ohmie in the still's place: the same Ohmie size and feet line (the artboard's 40-unit
-   headroom sits above, so the box starts 21px higher and nothing below it moves). */
+/* ============ 8. final CTA: checklist + big Ohmie ============ */
+.everything, .final { background: #fff; }
+.final { overflow: clip; }                      /* the glow behind Ohmie never leaves the band */
+.final-grid { display: grid; grid-template-columns: 1fr; gap: var(--s-8); align-items: center; }
+.final-copy h2 { text-align: left; }
+.final-list { list-style: none; margin: var(--s-6) 0 0; padding: 0; display: grid; gap: var(--s-3); }
+.final-list li { display: flex; align-items: center; gap: var(--s-4); font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem); line-height: 1.5; font-weight: 800; }
+.ico32 { width: 32px; height: 32px; flex: 0 0 auto; }
+.final-buttons { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-4); margin-top: var(--s-6); }
+.final-buttons .fine-print { margin: 0; }
+.final-visual { position: relative; isolation: isolate; display: flex; justify-content: center; align-items: flex-end; }
+/* a small warm glow behind the big Ohmie, sized to him, not a halo */
+.final-visual::before { content: ""; position: absolute; left: 50%; top: 50%; width: 130%; max-width: 24rem; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(255,176,32,0.18) 0%, rgba(255,216,77,0.11) 50%, rgba(255,216,77,0) 100%); z-index: -1; pointer-events: none; }
+.final-mascot { width: clamp(180px, 50vw, 260px); display: block; filter: drop-shadow(0 16px 24px rgba(203,154,6,0.28)); }
 .final-mascot[hidden] { display: none; }
-.final-mascot-rive { width: 116px; aspect-ratio: 220/260; margin: -21px auto var(--s-4); cursor: pointer; }
+.final-mascot-rive { width: clamp(200px, 54vw, 290px); aspect-ratio: 220/260; cursor: pointer; }
 .final-mascot-rive[hidden] { display: none; }
 .final-mascot-rive canvas { display: block; width: 100%; height: 100%; }
-.final-buttons { display: flex; flex-direction: column; align-items: center; gap: var(--s-4); margin-top: var(--s-8); }
+@media (min-width: 60rem) {
+  .final-grid { grid-template-columns: 1.2fr 1fr; gap: var(--s-12); }
+  .final-visual { justify-content: center; }
+}
 
-/* ============ footer (one row) ============ */
-.site-footer { background: var(--cream-deep); padding: var(--s-8) var(--s-6) var(--s-12); }
+/* ============ footer (cream, one row) ============
+   The row, the copyright line and privacy.html's grid carry the .wrap's own inline padding, so the footer's content
+   starts on the same gutter as every band above it (168 px at 1440). */
+.site-footer { background: var(--cream); border-top: 1px solid var(--hair); padding: var(--s-8) 0 var(--s-12); }
 @media (max-width: 48rem) { body:has(.sticky-bar) .site-footer { padding-bottom: calc(var(--s-12) + 5rem); } }
-.footer-row { max-width: var(--content-w); margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-4) var(--s-8); }
+.footer-row { max-width: var(--content-w); margin: 0 auto; padding-inline: var(--s-4); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-4) var(--s-8); }
 .footer-links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-6); }
 .footer-links a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 0.95rem; }
 .footer-links a:hover { color: var(--electric-dk); }
-.footer-copyright { max-width: var(--content-w); margin: var(--s-4) auto 0; color: var(--ink-mid); font-size: 0.875rem; }
+.footer-copyright { max-width: var(--content-w); margin: var(--s-4) auto 0; padding-inline: var(--s-4); color: var(--ink-mid); font-size: 0.875rem; }
+@media (min-width: 40rem) { .footer-row, .footer-copyright { padding-inline: var(--s-6); } }   /* privacy.html's .footer-grid gets the same in its own section below */
 
-/* ============ sticky bar (phones only) ============ */
-.sticky-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--stroke); box-shadow: 0 -6px 24px rgba(60,50,20,0.12); padding: var(--s-3) var(--s-4); padding-bottom: calc(var(--s-3) + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: var(--s-3); transform: translateY(110%); visibility: hidden; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), visibility 0s 0.3s; }
+/* ============ 9. sticky bar (phones only) ============ */
+.sticky-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--hair); box-shadow: 0 -6px 24px rgba(20,33,61,0.12); padding: var(--s-3) var(--s-4); padding-bottom: calc(var(--s-3) + env(safe-area-inset-bottom)); display: flex; align-items: center; gap: var(--s-3); transform: translateY(110%); visibility: hidden; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), visibility 0s 0.3s; }
 .sticky-bar.is-visible { transform: translateY(0); visibility: visible; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), visibility 0s; }
 .sticky-bar img { width: 40px; height: 40px; border-radius: 10px; flex: 0 0 auto; }
 .sticky-text { flex: 1 1 auto; min-width: 0; line-height: 1.25; }
 .sticky-text strong { display: block; font-weight: 900; }
 .sticky-text span { display: block; font-size: 0.875rem; color: var(--ink-mid); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sticky-bar .btn { padding: 0.85rem 1.5rem; min-height: 44px; font-size: 1rem; }
 .sticky-bar .store-badge { flex: 0 0 auto; }
-.sticky-bar .store-badge img { height: 40px; width: auto; border-radius: 0; }
+.sticky-bar .store-badge img { height: 40px; width: 120px; border-radius: 0; }
 @media (min-width: 48.01rem) { .sticky-bar { display: none; } }
 
 /* ============ reduced motion ============ */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  html.js .reveal { opacity: 1; transform: none; transition: none; }
   .sticky-bar { transition: none; }
-  .hero-mascot { animation: none; }
+  .btn, .store-badge, .more summary::after { transition: none; }
+  .btn-amber:active { transform: translateY(-2px); box-shadow: 0 4px 0 var(--amber-dk); }
   .phone > video { display: none; }
   .phone > video + .video-fallback { display: block; }
+  html.js .how-panel.is-active { animation: none; }
 }
-.video-fallback { display: none; position: absolute; inset: 2.2%; width: 95.6%; height: 95.6%; object-fit: cover; object-position: top; border-radius: 10.5%/4.8%; }
 
 /* ============ privacy page (privacy.html links this file) ============ */
-.footer-grid { max-width: var(--content-w); margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: var(--s-12); }
+.footer-grid { max-width: var(--content-w); margin: 0 auto; padding-inline: var(--s-4); display: grid; grid-template-columns: 1fr; gap: var(--s-12); }
+@media (min-width: 40rem) { .footer-grid { padding-inline: var(--s-6); } }   /* the .wrap gutter, after the base rule so it wins */
 .footer-brand .brand { margin-bottom: var(--s-4); }
 .footer-label { font-size: 0.875rem; color: var(--ink-mid); margin: var(--s-4) 0 var(--s-2); }
 .footer-col h3 { font-size: 1rem; margin-bottom: var(--s-4); }
