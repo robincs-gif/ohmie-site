@@ -21,7 +21,8 @@
      Apple reads ?ct= off an App Store URL and reports those installs
      under that name in App Store Connect. Ad traffic arrives carrying a
      utm tag, so pass it straight through; organic visits fall back to
-     "ohmie_site". Without this every install sourced from this page is
+     "ohmie_site". pt= is the provider token Apple needs to credit ct=.
+     Without this every install sourced from this page is
      unattributed, which makes paid spend unreadable.
 
      Runs first on purpose: if a later block throws, attribution has
@@ -35,7 +36,7 @@
       // Product page only. The subscription-management link must stay bare.
       if (!href || href.indexOf('/app/') === -1 || href.indexOf('ct=') !== -1) return;
       a.setAttribute('href', href + (href.indexOf('?') === -1 ? '?' : '&') +
-                             'ct=' + token + '&mt=8');
+                             'pt=128075266&ct=' + token + '&mt=8');
     });
   })();
 
