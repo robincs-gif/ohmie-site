@@ -12,7 +12,7 @@
    3b. "New in 1.6.3" card: its notes collapse behind a <details> on phones only
    4.  Videos: play when scrolled into view, pause off-screen, poster only under reduced motion
    5.  Live Rive mascots (hero, plan picker, final call to action): hop or run in, idle loop,
-       a reaction on every tap and on a plan change; Ohmie's Halloween costume from October 1 to November 1 */
+       a reaction on every tap and on a plan change */
 
 (function () {
   'use strict';
@@ -196,11 +196,7 @@
    Choreography: HopIn then Wave, or RunIn (which ends in its own wave), then the Idle loop; a
    LookAround every ~9 s in the hero; a tap plays one reaction and returns to Idle; the plan Ohmie
    cheers when the plan changes. The clips are one-shots, so each is followed by Idle after its own
-   length (seconds below, read from the file).
-   Halloween (October 1 to November 1, the app's costume window: <html class="halloween">, set in the
-   head): every clip plays with the one-frame CostumeHalloween timeline, so Ohmie wears his vampire
-   cape, collar and fangs and his little bat, and a tap plays Boo, Trick or treat, Jack-o'-lantern or
-   Bat swarm. It switches itself off after November 1. */
+   length (seconds below, read from the file). */
 (function () {
   'use strict';
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -213,13 +209,8 @@
   var finalBox = document.getElementById('finalMascotRive');
   if (!heroImg || !heroBox) return;
 
-  var HALLOWEEN = document.documentElement.classList.contains('halloween');
-  var LENGTH = { HopIn: 0.8, RunIn: 1.2, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8, ScreenSquish: 2.0, Tumble: 2.2,
-                 Boo: 1.5, TrickOrTreat: 1.6, JackOLantern: 2.2, BatSwarm: 2.4 };
-  var TAPS = HALLOWEEN ? ['Boo', 'TrickOrTreat', 'JackOLantern', 'BatSwarm']
-                       : ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle', 'ScreenSquish', 'Tumble'];
-  /* The costume is a one-frame timeline that keys only the costume's gates: played with a move, it dresses him. */
-  function dressed(name) { return HALLOWEEN ? [name, 'CostumeHalloween'] : name; }
+  var LENGTH = { HopIn: 0.8, RunIn: 1.2, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8, ScreenSquish: 2.0, Tumble: 2.2 };
+  var TAPS = ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle', 'ScreenSquish', 'Tumble'];
 
   function mascot(box, img, lookAround) {
     var canvas = box.querySelector('canvas');
@@ -229,13 +220,13 @@
 
     function clip(name, then) {
       busy = true;
-      r.stop(); r.play(dressed(name));
+      r.stop(); r.play(name);
       clearTimeout(next);
       next = setTimeout(then || idle, LENGTH[name] * 1000 + 60);
     }
     function idle() {
       busy = false;
-      r.stop(); r.play(dressed('Idle'));
+      r.stop(); r.play('Idle');
       if (!running()) r.pause();
     }
     function sync() {
@@ -248,7 +239,7 @@
         src: 'assets/rive/ohmie.riv?v=20261009e',
         canvas: canvas,
         artboard: 'Ohmie',
-        animations: dressed('Idle'),
+        animations: 'Idle',
         autoplay: false,
         layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.BottomCenter }),
         onLoad: function () {
@@ -298,7 +289,7 @@
     /* The plan Ohmie hops in beside the cards and reacts to the choice. */
     whenSeen(planImg, planBox, function () {
       var m = mascot(planBox, planImg, false);
-      if (m) window.__ohmiePlanReact = function (monthly) { m.react(HALLOWEEN ? 'Boo' : (monthly ? 'Giggle' : 'Cheer')); };
+      if (m) window.__ohmiePlanReact = function (monthly) { m.react(monthly ? 'Giggle' : 'Cheer'); };
     });
     /* The final Ohmie hops in when the visitor reaches the call to action. */
     whenSeen(finalImg, finalBox, function () { mascot(finalBox, finalImg, false); });
@@ -310,9 +301,8 @@
     s.async = true;
     s.addEventListener('load', function () {
       if (typeof rive !== 'undefined' && rive.RuntimeLoader) rive.RuntimeLoader.setWasmUrl('assets/vendor/rive/rive.wasm');
-      /* Timelines by name, two at once for the costume: deprecated in the next major runtime, fine in
-         the vendored one. Moving to a newer runtime means moving to the "Ohmie" state machine and its
-         view model's costume switch. */
+      /* Timelines by name: deprecated in the next major runtime, fine in the vendored one. Moving to a
+         newer runtime means moving to the "Ohmie" state machine. */
       if (typeof rive !== 'undefined' && rive.Rive) rive.Rive.suppressDeprecationWarnings = ['names-array', 'animation-names', 'animations-param'];
       start();
     });
