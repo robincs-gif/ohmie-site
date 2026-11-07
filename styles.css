@@ -166,7 +166,7 @@ section { padding-block: var(--band); }
   .hero-glow { inset: -16% -48% -8%; }           /* wider field on desktop: light behind the phone, not a rim; the hero still clips it */
 }
 
-/* ============ 2. proof strip (cream): three tiles + the quote ============ */
+/* ============ 2. proof strip (cream): four tiles + the quote ============ */
 .proof { background: #fff; padding-block: var(--s-8); }
 .proof-row { display: grid; grid-template-columns: 1fr; gap: 0; }
 /* phones: stacked rows, number | label, so every label stays on one line */
@@ -182,9 +182,9 @@ section { padding-block: var(--band); }
 .proof-quote cite { display: inline-flex; align-items: center; gap: var(--s-2); font-style: normal; font-weight: 800; color: var(--ink-mid); font-size: 0.875rem; margin-top: var(--s-3); }
 .proof-quote .stars { width: 80px; height: 16px; flex: 0 0 auto; }
 @media (min-width: 40rem) {
-  .proof-row { grid-template-columns: repeat(3, 1fr); gap: var(--s-4); align-items: start; }   /* the three numbers and labels share a line; the date hangs under tile 1 */
+  .proof-row { grid-template-columns: repeat(4, 1fr); gap: var(--s-4); align-items: start; }   /* the four numbers and labels share a line; the date hangs under tile 1 */
   .proof-stat { display: block; text-align: center; border-top: 0; padding: var(--s-2) var(--s-2); }
-  .proof-stat:first-child { padding-top: var(--s-2); }   /* the phone rule above strips tile 1's top padding; side by side all three tiles share it */
+  .proof-stat:first-child { padding-top: var(--s-2); }   /* the phone rule above strips tile 1's top padding; side by side all the tiles share it */
   .proof-stat + .proof-stat { border-left: 1px solid var(--hair); }
   .proof-label { margin-top: var(--s-1); }
   .proof-quote { grid-column: 1 / -1; text-align: center; margin-top: var(--s-6); padding-top: var(--s-6); }
@@ -192,7 +192,7 @@ section { padding-block: var(--band); }
 }
 @media (min-width: 60rem) {
   .proof { padding-block: var(--s-12); }
-  .proof-row { grid-template-columns: 1.15fr 1fr 1fr 2fr; gap: var(--s-4); }
+  .proof-row { grid-template-columns: 1.15fr 1fr 1fr 1fr 2fr; gap: var(--s-4); }
   .proof-stat { padding: var(--s-2) var(--s-4); }
   .proof-num { font-size: 1.75rem; }
   .proof-num .star { width: 24px; height: 24px; }
