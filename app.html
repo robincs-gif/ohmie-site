@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#FBF9F1">
+  <title>Open Ohmie</title>
+  <!--
+    The button in Ohmie's emails points here: https://ohmie.io/app?src=<email>.
+    iPhone with the app: iOS opens the app itself from the email (a Universal Link, see
+    .well-known/apple-app-site-association) and this page is never loaded.
+    iPhone or iPad without the app, or a browser that does not hand the link to the app: the App Store page.
+    Anything else (a computer, Android): the website.
+  -->
+  <noscript><meta http-equiv="refresh" content="0; url=https://ohmie.io/"></noscript>
+  <style>
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #FBF9F1; color: #1d1d1f; font: 17px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-align: center; }
+    main { padding: 24px; }
+    a { color: #b45309; }
+  </style>
+</head>
+<body>
+  <main>
+    <p>Opening Ohmie.</p>
+    <p><a id="store" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265">Get the app on the App Store</a></p>
+    <p><a href="https://ohmie.io/">Go to ohmie.io</a></p>
+  </main>
+  <script>
+    /* ROUTING (covered by a node test that runs this block). Pure functions first, one call at the end. */
+    var OHMIE_APP_STORE = 'https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265';
+    var OHMIE_HOME = 'https://ohmie.io/';
+
+    /* iPhone, iPod and iPad. iPadOS Safari reports itself as a Mac with a touch screen. */
+    function ohmieIsIOS(userAgent, platform, touchPoints) {
+      return /iPhone|iPod|iPad/.test(userAgent) || (platform === 'MacIntel' && touchPoints > 1);
+    }
+
+    /* ct= is what App Store Connect reports installs under; pt= is the provider token Apple needs to credit it. */
+    function ohmieCampaign(search) {
+      var raw = new URLSearchParams(search).get('src') || '';
+      return raw.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40) || 'ohmie_email';
+    }
+
+    function ohmieDestination(userAgent, platform, touchPoints, search) {
+      if (!ohmieIsIOS(userAgent, platform, touchPoints)) return OHMIE_HOME;
+      return OHMIE_APP_STORE + '?pt=128075266&ct=' + ohmieCampaign(search) + '&mt=8';
+    }
+
+    if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+      var ohmieTarget = ohmieDestination(navigator.userAgent, navigator.platform, navigator.maxTouchPoints || 0, window.location.search);
+      var ohmieStore = document.getElementById('store');
+      if (ohmieStore && ohmieTarget !== OHMIE_HOME) ohmieStore.setAttribute('href', ohmieTarget);
+      window.location.replace(ohmieTarget);
+    }
+  </script>
+</body>
+</html>

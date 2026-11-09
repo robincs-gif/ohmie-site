@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["4X75Q28PD6.com.engineertok.ohmic"],
+        "components": [
+          { "/": "/app", "comment": "Email buttons: open the Ohmie app on iPhone. Every other page stays in Safari." }
+        ]
+      }
+    ]
+  }
+}
