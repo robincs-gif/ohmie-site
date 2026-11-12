@@ -1,18 +1,16 @@
-/* Ohmie site — vanilla JS
-   (index.html marks <html class="js"> with an inline <script> in <head> so styles.css
-       may hide inactive tab panels; with JS off every panel stacks and nothing is hidden.)
+/* Ohmie site: vanilla JS
+   (index.html's inline <script> in <head> marks <html class="js">, and adds "scenes" when Ohmie's scenes can run:
+       IntersectionObserver is there and motion is allowed. Without either class every scene is a still picture and
+       the header badge simply shows.)
    0.  Campaign attribution stamped onto every App Store link
    0b. App Store clicks captured to PostHog (Site.appStoreClicked)
-   1.  Sticky bar (phones only): hidden while the hero CTA, the pricing button
-       or the final badge is on screen
-   2.  Tab lists (How Ohmie works, Subjects): aria-selected, roving tabindex, arrow keys;
-       the How panels are a scroll-snap carousel on phones
-   3.  Plan picker: Yearly / Monthly swaps the button label, the fine print and the
-       placement name (pricing ↔ pricing_monthly)
-   3b. "New in 1.6.3" card: its notes collapse behind a <details> on phones only
-   4.  Videos: play when scrolled into view, pause off-screen, poster only under reduced motion
-   5.  Live Rive mascots (hero, plan picker, final call to action): hop or run in, idle loop,
-       a reaction on every tap and on a plan change */
+   1.  Header: a rule under it once the page has scrolled; its App Store badge shows only while no other
+       App Store button is on screen
+   2.  Subjects strip: an arrow at each end that has more, when the line is wider than the screen
+   3.  "New in" card: its notes collapse behind a <details> on phones only
+   4.  Motion: a row's phone plays when its row scrolls in, then idles (styles.css "motion"); the sky fades in
+       behind the walk
+   5.  Ohmie's scenes: Rive artboards in the page's art boxes */
 
 (function () {
   'use strict';
@@ -57,103 +55,71 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- 1. sticky bar (phones only; CSS hides it above 48rem) ----------
-     Hidden while the hero CTA, the pricing button or the final badge is on
-     screen so two store buttons never stack. The pricing button is watched as
-     an element (#planBtn, the [data-placement="pricing"] pill): block 3 swaps
-     its placement attribute to pricing_monthly and back, and the observer
-     keeps watching the same element through the swap. */
-  var bar = document.getElementById('stickyBar');
-  var heroCta = document.getElementById('heroCta');
-  var pricingBtn = document.getElementById('planBtn') || document.querySelector('[data-placement="pricing"]');
-  var finalBadge = document.querySelector('[data-placement="final_cta"]');
-  if (bar && heroCta && pricingBtn && finalBadge && 'IntersectionObserver' in window) {
-    var heroVisible = true, pricingVisible = false, finalVisible = false;
-    var updateBar = function () {
-      var show = !heroVisible && !pricingVisible && !finalVisible;
-      bar.classList.toggle('is-visible', show);
-      bar.setAttribute('aria-hidden', show ? 'false' : 'true');
+  /* ---------- 1. header ----------
+     A rule appears under the header once the page has moved. The header's App Store badge (#headerCta; styles.css
+     hides it under html.js) shows only while no other App Store button is on screen: the hero's buttons, the walk's
+     badge, the offer's buttons, the ending's badge. Whatever is under the header itself counts as off screen. On
+     phones the name sits centred until the badge arrives (.has-cta moves it left). Without IntersectionObserver
+     the badge simply shows. */
+  var header = document.getElementById('siteHeader');
+  var headerCta = document.getElementById('headerCta');
+  if (header) {
+    var ruled = false;
+    var rule = function () {
+      var on = window.scrollY > 4;
+      if (on !== ruled) { ruled = on; header.classList.toggle('is-scrolled', on); }
     };
-    new IntersectionObserver(function (es) { heroVisible = es[0].isIntersecting; updateBar(); }).observe(heroCta);
-    new IntersectionObserver(function (es) { pricingVisible = es[0].isIntersecting; updateBar(); }).observe(pricingBtn);
-    new IntersectionObserver(function (es) { finalVisible = es[0].isIntersecting; updateBar(); }).observe(finalBadge);
+    window.addEventListener('scroll', rule, { passive: true });
+    rule();
   }
-
-  /* ---------- 2. tab lists ----------
-     Every [role=tablist] on the page: click selects, ArrowLeft/ArrowRight (and Up/Down)
-     wrap, Home/End jump; aria-selected + roving tabindex; the matching panels toggle
-     .is-active and all stay in the DOM. On phones the How panels sit in a scroll-snap
-     track, so selecting a tab scrolls its panel into view and swiping updates the tab. */
-  Array.prototype.slice.call(document.querySelectorAll('[role="tablist"]')).forEach(function (list) {
-    var tabs = Array.prototype.slice.call(list.querySelectorAll('[role="tab"]'));
-    var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
-    if (!tabs.length || panels.some(function (p) { return !p; })) return;
-    var track = panels[0].parentNode;
-    var selectTab = function (i, focus, scroll) {
-      tabs.forEach(function (t, j) {
-        var on = i === j;
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-        t.tabIndex = on ? 0 : -1;
-        panels[j].classList.toggle('is-active', on);
-      });
-      if (focus) tabs[i].focus();
-      if (scroll && track.scrollWidth > track.clientWidth + 4) {
-        track.scrollTo({ left: panels[i].offsetLeft - track.offsetLeft, behavior: reduceMotion ? 'auto' : 'smooth' });
-      }
-      if (list.scrollWidth > list.clientWidth + 4) {
-        tabs[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
-      }
+  if (header && headerCta) {
+    var others = Array.prototype.slice.call(document.querySelectorAll('#heroCta, .journey-head .store-badge, .plan-cta, [data-placement="final_cta"]'));
+    var showBadge = function (show) {
+      headerCta.classList.toggle('is-visible', show);
+      header.classList.toggle('has-cta', show);
     };
-    tabs.forEach(function (t, i) {
-      t.addEventListener('click', function () { selectTab(i, false, true); });
-      t.addEventListener('keydown', function (ev) {
-        var n = null;
-        if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') n = (i + 1) % tabs.length;
-        if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') n = (i - 1 + tabs.length) % tabs.length;
-        if (ev.key === 'Home') n = 0;
-        if (ev.key === 'End') n = tabs.length - 1;
-        if (n !== null) { ev.preventDefault(); selectTab(n, true, true); }
+    if (others.length && 'IntersectionObserver' in window) {
+      var onScreen = others.map(function (el) { return el.id === 'heroCta'; });   /* the page opens on the hero */
+      others.forEach(function (el, i) {
+        new IntersectionObserver(function (es) {
+          onScreen[i] = es[es.length - 1].isIntersecting;
+          showBadge(onScreen.indexOf(true) === -1);
+        }, { rootMargin: '-' + header.offsetHeight + 'px 0px 0px 0px' }).observe(el);
       });
-    });
-    /* swipe on the phone carousel: the panel that fills most of the track becomes the tab */
-    if ('IntersectionObserver' in window && track.classList.contains('how-panels')) {
-      var swipe = new IntersectionObserver(function (es) {
-        es.forEach(function (e) {
-          if (e.isIntersecting && e.intersectionRatio >= 0.6 && track.scrollWidth > track.clientWidth + 4) {
-            var i = panels.indexOf(e.target);
-            if (i >= 0 && tabs[i].getAttribute('aria-selected') !== 'true') selectTab(i, false, false);
-          }
-        });
-      }, { root: track, threshold: 0.6 });
-      panels.forEach(function (p) { swipe.observe(p); });
+    } else {
+      showBadge(true);
     }
-  });
-
-  /* ---------- 3. plan picker ----------
-     Yearly is the static default (the HTML renders it with JS off). Choosing Monthly
-     flips data-selected on the card group (CSS swaps the button label and the fine
-     print) and renames the placement on the pill and the badge: pricing ↔
-     pricing_monthly, the attribute swapped, never a third name. */
-  var plans = document.getElementById('plans');
-  var planBtn = document.getElementById('planBtn');
-  var planBadge = document.getElementById('planBadge');
-  if (plans && planBtn && planBadge) {
-    Array.prototype.slice.call(plans.querySelectorAll('input[name="plan"]')).forEach(function (input) {
-      input.addEventListener('change', function () {
-        if (!input.checked) return;
-        var monthly = input.value === 'monthly';
-        plans.setAttribute('data-selected', monthly ? 'monthly' : 'yearly');
-        planBtn.setAttribute('data-placement', monthly ? 'pricing_monthly' : 'pricing');
-        planBadge.setAttribute('data-placement', monthly ? 'pricing_monthly' : 'pricing');
-        if (typeof window.__ohmiePlanReact === 'function') window.__ohmiePlanReact(monthly);
-      });
-    });
   }
 
-  /* ---------- 3b. "New in 1.6.3" card ----------
-     Its six notes sit behind a <details> ("What's new in 1.6.3") on phones, closed
-     until tapped; from 60rem up the summary is hidden by CSS and the details stays
-     open. The HTML ships it open, so with JS off every note is visible. */
+  /* ---------- 2. subjects strip ----------
+     If the line of subjects is wider than the screen it scrolls sideways. An arrow shows at each end that has
+     more and moves the line by most of its width. */
+  var strip = document.querySelector('.strip-list');
+  if (strip) {
+    var arrow = function (dir) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'strip-arrow ' + (dir < 0 ? 'strip-prev' : 'strip-next');
+      b.hidden = true;
+      b.setAttribute('aria-label', dir < 0 ? 'Earlier subjects' : 'More subjects');
+      b.innerHTML = '<svg viewBox="0 0 12 18" aria-hidden="true" focusable="false"><path d="' + (dir < 0 ? 'M9.5 2 3 9l6.5 7' : 'M2.5 2 9 9l-6.5 7') + '" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      b.addEventListener('click', function () { strip.scrollBy({ left: dir * strip.clientWidth * 0.7, behavior: reduceMotion ? 'auto' : 'smooth' }); });
+      strip.parentNode.appendChild(b);
+      return b;
+    };
+    var prev = arrow(-1), next = arrow(1);
+    var arrows = function () {
+      prev.hidden = strip.scrollLeft < 8;
+      next.hidden = strip.scrollLeft > strip.scrollWidth - strip.clientWidth - 8;
+    };
+    strip.addEventListener('scroll', arrows, { passive: true });
+    window.addEventListener('resize', arrows);
+    arrows();
+  }
+
+  /* ---------- 3. "New in" card ----------
+     Its notes sit behind a <details> on phones, closed until tapped; from 60rem up the summary is hidden by CSS
+     and the details stays open. The HTML ships it open, so with JS off every note is visible. */
   var newDetails = document.querySelector('.new-details');
   if (newDetails && 'matchMedia' in window) {
     var wide = window.matchMedia('(min-width: 60rem)');
@@ -163,157 +129,266 @@
     else if (wide.addListener) wide.addListener(syncNew);
   }
 
-  /* ---------- 4. videos ----------
-     Reduced motion: poster only. Otherwise play on entry, pause off-screen;
-     autoplay refusals are swallowed (the poster stays). */
-  var videos = Array.prototype.slice.call(document.querySelectorAll('video[data-autoplay]'));
-  if (reduceMotion) {
-    videos.forEach(function (v) { v.removeAttribute('data-autoplay'); v.pause(); });
-  } else if (videos.length && 'IntersectionObserver' in window) {
-    var vo = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        var v = e.target;
-        if (e.isIntersecting) {
-          var p = v.play();
-          if (p && p.catch) p.catch(function () { v.controls = false; });
-        } else {
-          v.pause();
-        }
-      });
-    }, { threshold: 0.25 });
-    videos.forEach(function (v) { vo.observe(v); });
+  /* ---------- 4. motion ----------
+     styles.css "motion". Each stage is marked .is-seen the first time a third of it is on screen, which starts its
+     art and pops its icons, and .is-away while it is off screen, which pauses its idle loop. html.motion turns on
+     the poses before entry, so without this block (no IntersectionObserver, reduced motion, an earlier error) every
+     picture and icon simply stays where it is.
+     The sky: the pale tint behind the rows and the walk goes from clear to full as the top of the walk travels up
+     the screen, and back again on the way up. */
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('motion');
+    var stages = Array.prototype.slice.call(document.querySelectorAll('.row-art-phone, .check-col, .review-track'));
+    if (stages.length) {
+      var stageWatch = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting && e.intersectionRatio >= 0.3) e.target.classList.add('is-seen');
+          e.target.classList.toggle('is-away', !e.isIntersecting);
+        });
+      }, { threshold: [0, 0.3] });
+      stages.forEach(function (s) { stageWatch.observe(s); });
+    }
+    var sky = document.querySelector('.sky');
+    var walk = document.getElementById('journey');
+    if (sky && walk) {
+      var skyQueued = false;
+      var setSky = function () {
+        skyQueued = false;
+        var vh = window.innerHeight;
+        var p = (vh - walk.getBoundingClientRect().top) / vh;
+        sky.style.setProperty('--sky', Math.max(0, Math.min(1, p)).toFixed(3));
+      };
+      var askSky = function () { if (!skyQueued) { skyQueued = true; requestAnimationFrame(setSky); } };
+      window.addEventListener('scroll', askSky, { passive: true });
+      window.addEventListener('resize', askSky);
+      setSky();
+    }
   }
 })();
 
-/* ---------- 5. live Rive mascots ----------
-   Ohmie from the Rive file (assets/rive/ohmie.riv: the app's ohmie_lesson.riv, the "Ohmie" artboard,
-   220 x 260), in the hero, beside the plan cards and at the final call to action. Progressive
-   enhancement: each WebP stays unless Rive loads successfully. Honors prefers-reduced-motion (static
-   images). The runtime (~95 KB JS + ~360 KB wasm, gzipped) and the ~108 KB (gzipped) file are NOT in
-   the initial load: they are injected after the window load event (inside requestIdleCallback when
-   available); the plan and final Ohmies start when they scroll into view (the file is cached by then).
-   Each pauses while off-screen or the tab is hidden.
-   Choreography: HopIn then Wave, or RunIn (which ends in its own wave), then the Idle loop; a
-   LookAround every ~9 s in the hero; a tap plays one reaction and returns to Idle; the plan Ohmie
-   cheers when the plan changes. The clips are one-shots, so each is followed by Idle after its own
-   length (seconds below, read from the file). */
+/* ---------- 5. Ohmie's scenes ----------
+   Every .scene[data-artboard] is one artboard of the Rive file drawn into the scene's canvas. With scenes on
+   (html.scenes) a scene's box is empty until it starts and then plays itself in (.is-live); its still picture is
+   what shows instead without scripts, under reduced motion, if the runtime or the file fails, or if the file
+   lacks that artboard (.is-still). data-start says what starts a scene:
+     load    the hero: with the page, at the moment its phone squashes (styles.css html.rv-burst)
+     view    a third of it on screen. What plays is either data-machine, a state machine that runs an intro once
+             and then loops, or data-replay, a timeline that is started again each time it ends (one that loops
+             by itself simply loops), with data-loop, if given, as a second timeline that keeps playing on top.
+             Either way Ohmie never stands still.
+     scroll  it follows the scroll bar: data-scrub names the timeline moved by the scene's place on the screen,
+             from its top entering to its bottom leaving (eased, about 0.4 s to settle, and back again on the way
+             up), data-loop the one that keeps playing on top
+   Scenes never take pointer events, and each pauses while it is off screen or the tab is hidden. The runtime
+   (about 95 KB of JS and 360 KB of wasm, gzipped) and the file are not in the first load: they are fetched after
+   the window load event, when the browser is idle. */
 (function () {
   'use strict';
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var root = document.documentElement;
+  var els = Array.prototype.slice.call(document.querySelectorAll('.scene[data-artboard]'));
+  if (!els.length || !root.classList.contains('scenes')) return;
+  var FILE = 'assets/rive/ohmie-site.riv?v=20261111';
 
-  var heroImg = document.getElementById('heroMascotImg');
-  var heroBox = document.getElementById('heroMascotRive');
-  var planImg = document.getElementById('planMascotImg');
-  var planBox = document.getElementById('planMascotRive');
-  var finalImg = document.getElementById('finalMascotImg');
-  var finalBox = document.getElementById('finalMascotRive');
-  if (!heroImg || !heroBox) return;
+  var scenes = els.map(function (el) {
+    var sc = { el: el, canvas: el.querySelector('canvas'), artboard: el.getAttribute('data-artboard'),
+               machine: el.getAttribute('data-machine'), replay: el.getAttribute('data-replay'),
+               start: el.getAttribute('data-start') || 'view',
+               scrub: el.getAttribute('data-scrub'), loop: el.getAttribute('data-loop'),
+               r: null, video: null, made: false, loaded: false, started: false, inView: false, p: 0, len: 0 };
+    sc.scrolled = sc.start === 'scroll';
+    /* the timelines this script plays by name: a scroll scene's loop, or a replayed timeline with its loop on top */
+    sc.names = sc.scrolled ? [sc.loop] : (sc.replay ? [sc.replay, sc.loop] : []);
+    sc.names = sc.names.filter(Boolean);
+    return sc;
+  });
 
-  var LENGTH = { HopIn: 0.8, RunIn: 1.2, Wave: 1.2, LookAround: 2, Celebrate: 1.5, JumpForJoy: 1.4, Cheer: 0.83, Giggle: 0.8, ScreenSquish: 2.0, Tumble: 2.2 };
-  var TAPS = ['Celebrate', 'JumpForJoy', 'Cheer', 'Giggle', 'ScreenSquish', 'Tumble'];
-
-  function mascot(box, img, lookAround) {
-    var canvas = box.querySelector('canvas');
-    if (!canvas) return null;
-    var r, busy = true, inView = true, next = null, lastTap = -1;
-    var running = function () { return inView && !document.hidden; };
-
-    function clip(name, then) {
-      busy = true;
-      r.stop(); r.play(name);
-      clearTimeout(next);
-      next = setTimeout(then || idle, LENGTH[name] * 1000 + 60);
-    }
-    function idle() {
-      busy = false;
-      r.stop(); r.play('Idle');
-      if (!running()) r.pause();
-    }
-    function sync() {
-      if (!r) return;
-      if (running()) r.play(); else r.pause();
-    }
-
+  /* ---- the file: fetched once, shared by every scene ---- */
+  var file = null, low = null, fileState = 'waiting', queue = [];   /* waiting | ready | failed */
+  function whenFile(fn) { if (fileState === 'waiting') queue.push(fn); else fn(); }
+  function settle(state) {
+    if (fileState !== 'waiting') return;
+    fileState = state;
+    queue.splice(0).forEach(function (fn) { fn(); });
+  }
+  /* A timeline's length in seconds, or 0 if the file has no such artboard or timeline. */
+  function lengthOf(artboard, timeline) {
+    var ab = null, len = 0;
     try {
-      r = new rive.Rive({
-        src: 'assets/rive/ohmie.riv?v=20261009e',
-        canvas: canvas,
-        artboard: 'Ohmie',
-        animations: 'Idle',
-        autoplay: false,
-        layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.BottomCenter }),
-        onLoad: function () {
-          r.resizeDrawingSurfaceToCanvas();
-          img.hidden = true; box.hidden = false;
-          r.resizeDrawingSurfaceToCanvas();
-          if ('IntersectionObserver' in window) {
-            new IntersectionObserver(function (es) {
-              es.forEach(function (e) { inView = e.isIntersecting; });
-              sync();
-            }, { threshold: 0 }).observe(box);
-          }
-          document.addEventListener('visibilitychange', sync);
-          window.addEventListener('resize', function () { r.resizeDrawingSurfaceToCanvas(); });
-          if (Math.random() < 0.5) clip('HopIn', function () { clip('Wave'); });
-          else clip('RunIn');
-          if (lookAround) setInterval(function () { if (!busy && running()) clip('LookAround'); }, 9000);
-        },
-        onLoadError: function () { box.hidden = true; img.hidden = false; }
+      ab = low.artboardByName(artboard);
+      if (ab && timeline) { var a = ab.animationByName(timeline); len = a ? a.duration / a.fps : 0; }
+      else if (ab) len = 1;
+    } catch (e) { len = 0; }
+    if (ab && ab.delete) ab.delete();
+    return len;
+  }
+
+  /* A scene that cannot play shows its still picture (and whatever it was going to replace). */
+  function still(sc) {
+    sc.el.classList.add('is-still');
+    var hide = sc.el.getAttribute('data-hide'), target = hide && document.querySelector(hide);
+    if (target) target.style.visibility = 'visible';
+  }
+
+  function make(sc) {
+    whenFile(function () {
+      var ok = fileState === 'ready' && lengthOf(sc.artboard, sc.scrolled ? sc.scrub : sc.replay) > 0;
+      if (!ok) { if (!standin(sc)) still(sc); return; }
+      if (sc.scrolled) sc.len = lengthOf(sc.artboard, sc.scrub);
+      try {
+        sc.r = new rive.Rive({
+          riveFile: file, canvas: sc.canvas, artboard: sc.artboard, autoplay: false,
+          stateMachine: sc.names.length ? undefined : sc.machine,
+          animations: sc.names.length ? (sc.scrolled ? [sc.scrub] : []).concat(sc.names) : undefined,
+          layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.Center }),
+          onLoad: function () {
+            sc.r.resizeDrawingSurfaceToCanvas();
+            sc.loaded = true;
+            if (sc.scrolled) { sc.started = true; sc.p = progressOf(sc); sc.r.scrub(sc.scrub, sc.p * sc.len); }
+            if (sc.burst) sc.burst();
+            /* a timeline with no loop of its own stops when it ends: start it again (sync plays it from the top) */
+            if (sc.replay) sc.r.on(rive.EventType.Stop, function () { sync(sc); });
+            sync(sc);
+          },
+          onLoadError: function () { sc.r = null; if (!standin(sc)) still(sc); }
+        });
+      } catch (e) { sc.r = null; if (!standin(sc)) still(sc); }
+    });
+  }
+
+  /* Play or pause a scene to match what the visitor can see. A scene shows from the moment it first plays. */
+  function sync(sc) {
+    if (!sc.loaded) return;
+    var run = sc.inView && !document.hidden && sc.started;
+    if (run) sc.el.classList.add(sc.video ? 'is-standin' : 'is-live');
+    if (sc.video) { syncStandin(sc, run); return; }
+    var what = sc.names.length ? sc.names : sc.machine;
+    if (what) { if (run) sc.r.play(what); else sc.r.pause(what); }
+    if (run && sc.scrolled) wake();
+  }
+
+  /* ---- the scroll scenes: 0 to 1 from where the scene sits on the screen, eased ---- */
+  function progressOf(sc) {
+    var r = sc.el.getBoundingClientRect(), vh = window.innerHeight;
+    return Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height)));
+  }
+  var ticking = false, last = 0;
+  function wake() { if (!ticking) { ticking = true; last = 0; requestAnimationFrame(tick); } }
+  function tick(now) {
+    var dt = Math.min(0.1, (now - (last || now)) / 1000); last = now;
+    var k = 1 - Math.exp(-dt / 0.13), busy = false;
+    scenes.forEach(function (sc) {
+      if (!sc.scrolled || !sc.loaded || !sc.inView || document.hidden) return;
+      busy = true;
+      var target = progressOf(sc), was = sc.p;
+      sc.p += (target - sc.p) * k;
+      if (Math.abs(target - sc.p) < 0.0005) sc.p = target;
+      if (sc.video) scrubStandin(sc);
+      else if (sc.p !== was) sc.r.scrub(sc.scrub, sc.p * sc.len);
+    });
+    if (busy) requestAnimationFrame(tick); else ticking = false;
+  }
+
+  /* ---- clips that stand in (assets/standin/) ----
+     A scene whose artboard the file does not hold yet plays its <video data-standin> instead, started and driven the
+     same way. A "view" scene's clip plays while it is on screen: a clip marked loop simply loops; one with
+     data-loop-from plays its opening once and then everything after that many seconds on a loop. A "scroll" scene's
+     clip is moved to the moment that matches the scene's place, over its first data-scrub-end seconds. If the
+     browser will not play a clip (an iPhone in Low Power Mode), the scene's still picture shows instead.
+     This part, the calls to it above, and the <video data-standin> elements go when the file holds those scenes. */
+  function standin(sc) {
+    var v = sc.el.querySelector('video[data-standin]');
+    if (!v) return false;
+    sc.video = v;
+    sc.scrubEnd = parseFloat(v.getAttribute('data-scrub-end')) || 0;
+    var src = v.querySelector('source');
+    if (src && window.fetch) {   /* held in memory, so it can be moved to any moment whatever the server */
+      fetch(src.src).then(function (res) { return res.blob(); }).then(function (blob) { v.src = URL.createObjectURL(blob); v.load(); sync(sc); }).catch(function () {});
+    } else { v.preload = 'auto'; v.load(); }
+    var loopFrom = parseFloat(v.getAttribute('data-loop-from')) || 0;
+    if (!sc.scrolled && !v.loop) {
+      /* the opening plays once; from then on the clip goes back to data-loop-from each time it reaches its end */
+      v.addEventListener('timeupdate', function () { if (v.duration && v.currentTime > v.duration - 0.06 && !v.paused) v.currentTime = loopFrom; });
+      v.addEventListener('ended', function () {
+        if (!sc.inView || document.hidden) return;
+        v.currentTime = loopFrom;
+        var p = v.play(); if (p && p.catch) p.catch(function () {});
       });
-    } catch (e) { box.hidden = true; img.hidden = false; return null; }
-
-    box.addEventListener('click', function () {
-      if (!r || busy) return;
-      var i;
-      do { i = Math.floor(Math.random() * TAPS.length); } while (i === lastTap);
-      lastTap = i;
-      clip(TAPS[i]);
+    }
+    sc.loaded = true;
+    if (sc.scrolled) { sc.started = true; sc.p = progressOf(sc); }
+    sync(sc);
+    return true;
+  }
+  function syncStandin(sc, run) {
+    if (sc.scrolled) { if (run) wake(); else sc.video.pause(); return; }
+    if (!run) { sc.video.pause(); return; }
+    var p = sc.video.play();
+    if (p && p.catch) p.catch(function (err) {
+      /* refused, not merely interrupted by a pause: the still takes the clip's place */
+      if (err && err.name === 'NotAllowedError') { sc.el.classList.remove('is-standin'); sc.el.classList.add('is-still'); sc.video = null; sc.loaded = false; }
     });
-    return { react: function (name) { if (r && !busy) clip(name); } };
+  }
+  function scrubStandin(sc) {
+    var v = sc.video, t = sc.p * sc.scrubEnd;
+    if (v.readyState >= 1 && !v.seeking && Math.abs(v.currentTime - t) > 0.016) v.currentTime = t;
   }
 
-  function whenSeen(img, box, then) {
-    if (!img || !box) return;
-    if (!('IntersectionObserver' in window)) { then(); return; }
-    var seen = new IntersectionObserver(function (es) {
-      if (!es.some(function (e) { return e.isIntersecting; })) return;
-      seen.disconnect();
-      then();
-    }, { threshold: 0.3 });
-    seen.observe(img);
-  }
+  /* ---- watching ---- */
+  scenes.forEach(function (sc) {
+    /* made a little before it is needed */
+    new IntersectionObserver(function (es) {
+      if (es[es.length - 1].isIntersecting && !sc.made) { sc.made = true; make(sc); }
+    }, { rootMargin: '400px 0px' }).observe(sc.el);
+    new IntersectionObserver(function (es) {
+      var e = es[es.length - 1];
+      sc.inView = e.isIntersecting;
+      if (e.intersectionRatio >= 0.34 && sc.start === 'view') sc.started = true;
+      sync(sc);
+    }, { threshold: [0, 0.34] }).observe(sc.el);
+    if (sc.start === 'load') {
+      /* the hero: about a second and a half into the page, or as soon after that as the scene is ready, the phone
+         squashes and Ohmie comes out of it */
+      sc.burst = function () {
+        if (sc.bursting || !sc.due || !sc.loaded) return;
+        sc.bursting = true;
+        root.classList.add('rv-burst');
+        setTimeout(function () { sc.started = true; sync(sc); }, 180);
+      };
+      setTimeout(function () { sc.due = true; sc.burst(); }, Math.max(0, 1500 - performance.now()));
+    }
+    if ('ResizeObserver' in window) new ResizeObserver(function () { if (sc.r && sc.loaded) sc.r.resizeDrawingSurfaceToCanvas(); }).observe(sc.el);
+  });
+  document.addEventListener('visibilitychange', function () { scenes.forEach(sync); });
+  window.addEventListener('scroll', function () { if (!ticking && scenes.some(function (sc) { return sc.scrolled && sc.inView && sc.loaded; })) wake(); }, { passive: true });
 
-  function start() {
-    if (typeof rive === 'undefined') return;
-    mascot(heroBox, heroImg, true);
-    /* The plan Ohmie hops in beside the cards and reacts to the choice. */
-    whenSeen(planImg, planBox, function () {
-      var m = mascot(planBox, planImg, false);
-      if (m) window.__ohmiePlanReact = function (monthly) { m.react(monthly ? 'Giggle' : 'Cheer'); };
-    });
-    /* The final Ohmie hops in when the visitor reaches the call to action. */
-    whenSeen(finalImg, finalBox, function () { mascot(finalBox, finalImg, false); });
+  /* ---- loading: the runtime, then the file ---- */
+  function fail() { settle('failed'); }
+  function load() {
+    if (typeof rive === 'undefined' || !rive.RiveFile) { fail(); return; }
+    if (rive.RuntimeLoader) rive.RuntimeLoader.setWasmUrl('assets/vendor/rive/rive.wasm');
+    /* Some scenes play timelines by name: deprecated in the next major runtime, fine in the vendored one. */
+    if (rive.Rive) rive.Rive.suppressDeprecationWarnings = ['names-array', 'animation-names', 'animations-param'];
+    try {
+      file = new rive.RiveFile({ src: FILE,
+        onLoad: function () { low = file.getInstance(); settle(low ? 'ready' : 'failed'); },
+        onLoadError: fail });
+      var p = file.init();
+      if (p && p.catch) p.catch(fail);
+    } catch (e) { fail(); }
   }
-
   function inject() {
     var s = document.createElement('script');
     s.src = 'assets/vendor/rive/rive.js';
     s.async = true;
-    s.addEventListener('load', function () {
-      if (typeof rive !== 'undefined' && rive.RuntimeLoader) rive.RuntimeLoader.setWasmUrl('assets/vendor/rive/rive.wasm');
-      /* Timelines by name: deprecated in the next major runtime, fine in the vendored one. Moving to a
-         newer runtime means moving to the "Ohmie" state machine. */
-      if (typeof rive !== 'undefined' && rive.Rive) rive.Rive.suppressDeprecationWarnings = ['names-array', 'animation-names', 'animations-param'];
-      start();
-    });
+    s.addEventListener('load', load);
+    s.addEventListener('error', fail);
     document.head.appendChild(s);
+    setTimeout(fail, 15000);   /* neither loaded nor failed after 15 s: the stills take over (settle ignores a late answer) */
   }
-
   function schedule() {
     if ('requestIdleCallback' in window) window.requestIdleCallback(inject, { timeout: 2000 });
     else window.setTimeout(inject, 500);
   }
-
   if (document.readyState === 'complete') schedule();
   else window.addEventListener('load', schedule);
 })();
