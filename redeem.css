@@ -1,0 +1,99 @@
+/* ============================================================
+   ohmie.io/redeem: one white card on the cream base, phone first. Loads after styles.css and uses its tokens,
+   its Nunito, its header, footer and its amber button. Light only. One amber button on screen per state.
+   The steps are <div>s, so styles.css's `section { padding-block }` never reaches them.
+   ============================================================ */
+:root {
+  /* the site has no red for text (--heart is for in-app hearts only), so this page keeps its own: a warm brick that
+     sits with the cream, navy and amber. 5.32:1 on its tint, 6.06:1 on white */
+  --redeem-error: #B3361F;
+  --redeem-error-tint: #FDEDE7;
+}
+.redeem-page { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+.redeem-page .site-nav { display: flex; }   /* the Support link shows on phones too: it is the header's only link */
+.redeem-main { flex: 1; padding: var(--s-6) var(--s-4) var(--s-8); }
+.redeem-card {
+  max-width: 26rem; margin: 0 auto; padding: var(--s-6) var(--s-4) var(--s-8);
+  background: #fff; border: 1px solid var(--hair); border-radius: var(--r-card); box-shadow: var(--shadow-card);
+}
+@media (min-width: 40rem) {
+  .redeem-main { padding-block: var(--s-12); }
+  .redeem-card { max-width: 28rem; padding: var(--s-8); }
+  .redeem-card h1 { font-size: 2rem; }
+}
+.redeem-mascot { display: block; width: 72px; height: auto; margin: 0 auto var(--s-2); }
+.redeem-card h1 { font-size: 1.75rem; letter-spacing: -0.01em; text-align: center; }
+.redeem-sub { color: var(--ink-mid); margin-top: var(--s-2); text-align: center; }
+.redeem-sub[hidden], .redeem-step[hidden], .redeem-renewing[hidden] { display: none; }
+.redeem-step { margin-top: var(--s-6); padding-block: 0; }
+
+.redeem-field { margin-top: var(--s-4); }
+.redeem-field label { display: block; font-weight: 800; color: var(--navy); font-size: 0.9375rem; margin-bottom: var(--s-1); }
+.redeem-field input {
+  width: 100%; min-height: var(--control); padding: 0 var(--s-4);
+  font: inherit; font-size: 1rem; color: var(--ink); background: var(--base);
+  border: 1px solid var(--hair); border-radius: 14px;
+}
+.redeem-field input { transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+/* focus: one soft ring in the site's link blue, drawn by the field itself (no outline on top of it) */
+.redeem-field input:focus-visible { outline: none; border-color: var(--electric-dk); box-shadow: 0 0 0 3px rgba(19, 106, 151, 0.22); }
+.redeem-field input[readonly] { background: var(--cream); color: var(--ink-mid); }
+.redeem-field input[aria-invalid="true"] { border-color: var(--redeem-error); }
+.redeem-field input[aria-invalid="true"]:focus-visible { box-shadow: 0 0 0 3px rgba(179, 54, 31, 0.18); }
+#code { font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+#code::placeholder { color: var(--lock); letter-spacing: 0.06em; }
+
+/* the card's shape while the session loads: two still bars where the buttons will be (no shimmer) */
+.redeem-skeleton span { display: block; height: var(--control); margin-top: var(--s-4); border-radius: 14px; background: var(--cream); }
+
+/* buttons: the site's .btn, full width, 48 px. Apple and Google keep their names in title case */
+.redeem-btn { width: 100%; min-height: var(--control); margin-top: var(--s-4); border: 0; cursor: pointer; font-family: inherit; }
+.redeem-btn:disabled, .redeem-toggle button:disabled, .redeem-link:disabled { opacity: 0.55; cursor: default; }
+.btn-amber.redeem-btn:disabled { transform: none; filter: none; }
+.redeem-provider { text-transform: none; letter-spacing: 0; font-size: 1rem; font-weight: 800; }
+.redeem-step > .redeem-provider:first-child { margin-top: 0; }
+.redeem-apple { background: #000; color: #fff; box-shadow: 0 4px 0 var(--ink); }
+.redeem-apple:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 var(--ink); }
+.redeem-google { background: #fff; color: var(--ink); border: 1px solid var(--hair); box-shadow: 0 4px 0 var(--stroke); }
+.redeem-google:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 var(--stroke); }
+
+.redeem-or { display: flex; align-items: center; gap: var(--s-3); margin: var(--s-4) 0; color: var(--ink-mid); font-size: 0.875rem; }
+.redeem-or::before, .redeem-or::after { content: ""; flex: 1; height: 1px; background: var(--hair); }
+
+/* Create account / I have an account: two halves of one pill */
+.redeem-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: var(--cream); border-radius: 14px; }
+.redeem-toggle button {
+  min-height: 40px; border: 0; border-radius: 11px; background: transparent; cursor: pointer;
+  font: inherit; font-weight: 800; font-size: 0.875rem; color: var(--ink-mid);
+}
+.redeem-toggle button[aria-pressed="true"] { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(60, 50, 20, 0.15); }
+
+.redeem-who { overflow-wrap: anywhere; }
+.redeem-who strong { color: var(--navy); font-weight: 900; }
+/* links in the card read like the site's .text-link: link blue, heavy, underlined on hover */
+.redeem-link, .redeem-renewing a { color: var(--electric-dk); font-weight: 800; text-decoration: none; }
+.redeem-link:hover:not(:disabled), .redeem-renewing a:hover { text-decoration: underline; }
+.redeem-link { padding: 0; border: 0; background: none; cursor: pointer; font: inherit; font-weight: 800; }
+
+.redeem-line { margin-top: var(--s-4); font-weight: 800; color: var(--navy); }
+.redeem-line:empty { display: none; }
+/* the lines that only ever carry a problem (redeem.js: codeLine, authLine, line): brick text on its own tint */
+#codeLine, #authMsg, #result {
+  padding: var(--s-2) var(--s-3); border-radius: 12px; font-size: 0.9375rem; line-height: 1.4;
+  color: var(--redeem-error); background: var(--redeem-error-tint);
+}
+/* success: navy on the site's sky tint, the same box shape as an error, so it reads as the answer */
+.redeem-line.is-ok {
+  padding: var(--s-3) var(--s-4); border-radius: 14px; font-size: 1.125rem; font-weight: 900; line-height: 1.35;
+  color: var(--navy); background: var(--electric-tint);
+}
+#codeLine { margin-top: var(--s-2); }
+.redeem-step > .redeem-line:first-child { margin-top: 0; }
+
+/* granted, already: the green line, the renewal note, three steps, the App Store badge */
+.redeem-renewing { margin-top: var(--s-4); padding: var(--s-3) var(--s-4); background: var(--amber-tint); border-radius: 14px; }
+.redeem-renewing p { font-size: 0.9375rem; }
+.redeem-renewing a { display: inline-flex; align-items: center; min-height: var(--control); }
+.redeem-next { margin: var(--s-4) 0 0; padding-left: 1.25rem; }
+.redeem-next li { margin-top: var(--s-2); }
+.redeem-badge { display: table; margin: var(--s-6) auto 0; }
