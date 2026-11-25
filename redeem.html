@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#FBF9F1">
+  <title>Redeem a code — Ohmie</title>
+  <!--
+    The page a promo code link opens: https://ohmie.io/redeem?promo=OHMIE-XXXXXXXXXX.
+    Sign in (Apple, Google, or email and password), then Redeem sends the code to the redeem-code edge function.
+    One state drives what the card shows (redeem.js: next, viewOf, render). On localhost, ?stub=<state> shows any state.
+    No analytics. Not in sitemap.xml. How it works: redeem.js; its pure functions: tests/redeem.test.mjs.
+  -->
+  <link rel="icon" type="image/png" href="assets/favicon.png?v=20261105">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261105">
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-latin-var.woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=20261111d">
+  <link rel="stylesheet" href="redeem.css?v=20261124b">
+  <noscript><style>.redeem-step[data-step="resolving"] { display: none; }</style></noscript>
+  <!-- supabase-js pinned to one version; the hash is that exact file's sha384, so a changed file does not run -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"
+          integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ"
+          crossorigin="anonymous" defer></script>
+  <script src="redeem.js?v=20261124b" defer></script>
+</head>
+<body class="redeem-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="Ohmie home">
+        <img src="assets/ohmie-happy.webp" alt="" class="brand-mark" width="36" height="36" decoding="async">
+        <span class="brand-word">Ohmie</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="mailto:support@ohmie.io">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="redeem-main">
+    <div class="redeem-card" data-state="resolving" aria-busy="true">
+      <img src="assets/ohmie-happy.webp" alt="" class="redeem-mascot" width="96" height="93" decoding="async">
+      <h1>Redeem your code</h1>
+      <p id="sub" class="redeem-sub" hidden>Sign in the way you do in the app. Your code turns on Ohmie Pro.</p>
+
+      <div class="redeem-field">
+        <label for="code">Your code</label>
+        <input id="code" name="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="64" placeholder="OHMIE-XXXXXXXXXX" aria-describedby="codeLine">
+      </div>
+      <p id="codeLine" class="redeem-line" role="alert"></p>
+
+      <noscript><p class="redeem-line">This page needs JavaScript to sign you in.</p></noscript>
+
+      <!-- resolving: the card's shape while the session loads -->
+      <div class="redeem-step" data-step="resolving">
+        <p class="redeem-line">One moment.</p>
+        <div class="redeem-skeleton" aria-hidden="true"><span></span><span></span></div>
+      </div>
+
+      <!-- signedOut: Apple, Google, or, email -->
+      <div class="redeem-step" data-step="signedOut" hidden>
+        <button type="button" id="apple" class="btn redeem-btn redeem-provider redeem-apple">Continue with Apple</button>
+        <button type="button" id="google" class="btn redeem-btn redeem-provider redeem-google">Continue with Google</button>
+        <p class="redeem-or"><span>or</span></p>
+        <div class="redeem-toggle" role="group" aria-label="Account">
+          <button type="button" id="modeCreate" data-mode="create" aria-pressed="true">Create account</button>
+          <button type="button" id="modeSignIn" data-mode="signin" aria-pressed="false">I have an account</button>
+        </div>
+        <form id="authForm" novalidate>
+          <div class="redeem-field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required>
+          </div>
+          <div class="redeem-field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="new-password" required>
+          </div>
+          <button type="submit" id="authSubmit" class="btn btn-amber redeem-btn">Create account</button>
+        </form>
+        <p id="authMsg" class="redeem-line" role="status" aria-live="polite"></p>
+      </div>
+
+      <!-- awaitingEmailConfirm -->
+      <div class="redeem-step" data-step="awaitingEmailConfirm" hidden>
+        <p class="redeem-line">Check your email, then tap the link. Your code is saved.</p>
+        <p><button type="button" id="wrongEmail" class="redeem-link">Wrong email? Go back</button></p>
+      </div>
+
+      <!-- signedIn, redeeming, rejected, failed -->
+      <div class="redeem-step" data-step="signedIn" hidden>
+        <p class="redeem-who">Signed in as <strong id="who"></strong>. <button type="button" id="signout" class="redeem-link">Not you?</button></p>
+        <button type="button" id="redeem" class="btn btn-amber redeem-btn">Redeem</button>
+        <p id="result" class="redeem-line" role="status" aria-live="polite"></p>
+      </div>
+
+      <!-- granted, already -->
+      <div class="redeem-step" data-step="done" hidden>
+        <p id="doneLine" class="redeem-line is-ok" role="status" aria-live="polite"></p>
+        <div id="renewing" class="redeem-renewing" hidden>
+          <p>Your subscription still renews. Turn off renewal to use this free time.</p>
+          <a href="https://apps.apple.com/account/subscriptions">Manage Subscription</a>
+        </div>
+        <ol class="redeem-next">
+          <li>Get Ohmie on the App Store.</li>
+          <li>Open it and tap “I already have an account”.</li>
+          <li>Sign in the same way you did here.</li>
+        </ol>
+        <a id="appStore" class="store-badge store-badge-lg redeem-badge" href="https://apps.apple.com/us/app/ohmie-learn-electronics/id6779694265" aria-label="Download Ohmie on the App Store">
+          <img src="assets/app-store-badge.svg" alt="" width="156" height="52">
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- privacy.html's footer, without its App Store badge: the granted state shows the page's one badge -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="index.html">
+          <img src="assets/ohmie-happy.webp" alt="" class="brand-mark" width="36" height="36" loading="lazy" decoding="async">
+          <span class="brand-word">Ohmie</span>
+        </a>
+      </div>
+      <div class="footer-col">
+        <h3>Legal</h3>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms of Use</a>
+        <a href="https://apps.apple.com/account/subscriptions">Manage Subscription</a>
+      </div>
+      <div class="footer-col">
+        <h3>Company</h3>
+        <a href="mailto:support@ohmie.io">Contact</a>
+      </div>
+    </div>
+    <p class="footer-copyright">© 2026 Ohmie LLC. All rights reserved.</p>
+  </footer>
+</body>
+</html>
